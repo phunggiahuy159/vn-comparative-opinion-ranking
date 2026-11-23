@@ -14,7 +14,7 @@ import numpy as np
 from scipy.stats import kendalltau, spearmanr
 
 sys.path.insert(0, str(Path(__file__).parent))
-import joint_model as J  # noqa: E402
+from edr import EDR, select_gamma  # noqa: E402
 from ranking import bradley_terry, build_matrix, prank, sentiment_prior  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -62,19 +62,25 @@ def main(min_reviews=10):
            and (c["loser"] in prods or c["loser"].startswith("group:")) and c not in ent]
     print(f"products(>= {min_reviews} reviews)={len(keys)}  entity comps={len(ent)}  brand comps={len(grp)}  with price={len(price)}")
     B = bench()
+    brand = {k: prods[k]["brand"] for k in keys}
+    gmap = {b: [k for k in ks if k in prods] for b, ks in groups.items()}
+    fitkw = dict(price=price or None, brand=brand, groups=gmap)
+    if len(ent) >= 15:   # enough head-to-head evidence to referee γ
+        edr_model, edr_gamma, _ = select_gamma(keys, ASPECTS, ent + grp, senti, **fitkw); edr_mode = "chosen by held-out comparisons"
+    else:                # too few entity comparisons: γ cannot be refereed → report γ learned jointly, flagged as weak
+        edr_model = EDR().fit(keys, ASPECTS, ent + grp, senti, **fitkw)
+        edr_gamma = {a: float(v) for a, v in edr_model.summary()["gamma(price-relativity)"].items()}; edr_mode = "learned (WEAK: <15 entity comparisons)"
     rankings, evals = {}, {}
     for a in ASPECTS:
         nodes, W = build_matrix(ent, a, keys)
         res = {"sentiment": dict(zip(nodes, sentiment_prior(nodes, a, senti))),
                "Bradley-Terry": bradley_terry(nodes, W),
                "pRank": prank(nodes, W, a, senti)}
-        s, m = J.rank(keys, a, ent + grp, senti, price=price or None, aspects=ASPECTS,
-                      groups={b: [k for k in ks if k in prods] for b, ks in groups.items()})
-        res["EDR"] = s
+        res["EDR"] = edr_model.quality(a)
         if price:
             res["price only"] = {k: price.get(k, np.nan) for k in keys}
         rankings[a] = {name: sorted(keys, key=lambda k: -np.nan_to_num(r[k], nan=-1e9)) for name, r in res.items()}
-        evals[a] = {"beta": {k: float(v) for k, v in m["beta"][a].items()}}
+        evals[a] = {"edr": {"gamma": edr_gamma, "gamma_mode": edr_mode, "hedonic": {k: float(v) for k, v in edr_model.summary()["hedonic_coef"][a].items()}}}
         if a in B:
             common = [k for k in keys if k in B[a]]
             for name, r in res.items():
@@ -82,9 +88,10 @@ def main(min_reviews=10):
                 if len(common) >= 5:
                     evals[a][name] = {"n": len(common), "spearman": float(spearmanr(x, y).statistic),
                                       "kendall": float(kendalltau(x, y).statistic)}
-        print(f"\n== {a}  (learned beta: {evals[a]['beta']})")
+        ri = edr_model.rank_intervals(a)
+        print(f"\n== {a}  (EDR γ={edr_gamma} [{edr_mode}], hedonic log-price coef={evals[a]['edr']['hedonic'].get('log_price')})")
         for k in rankings[a]["EDR"][:8]:
-            print(f"   {allp[k]['name'][:34]:34s} n_rev={allp[k]['n_reviews']:3d}  "
+            print(f"   {allp[k]['name'][:34]:34s} rank90%={ri[k]} n_rev={allp[k]['n_reviews']:3d}  "
                   f"pos/neg={senti.get((k, a), {}).get('pos', 0)}/{senti.get((k, a), {}).get('neg', 0)}")
     (ROOT / "results" / "real_rankings.json").write_text(json.dumps(
         {a: {n: [allp[k]["name"] for k in r] for n, r in v.items()} for a, v in rankings.items()}, ensure_ascii=False, indent=1))

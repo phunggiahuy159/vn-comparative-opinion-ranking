@@ -1,36 +1,36 @@
 {
-  "reviews": 1325,
-  "products": 95,
-  "products_with_price": 0,
-  "products_>=20_reviews": 22,
-  "rule_tuples_with_object": 21,
-  "linked_comparisons": 21,
+  "reviews": 1414,
+  "products": 102,
+  "products_with_price": 99,
+  "products_>=20_reviews": 23,
+  "rule_tuples_with_object": 23,
+  "linked_comparisons": 23,
   "edge_kinds": {
     "cat-group": 2,
-    "group-cat": 5,
+    "group-cat": 6,
     "cat-ext": 3,
     "cat-cat": 1,
-    "ext-cat": 9,
+    "ext-cat": 10,
     "group-group": 1
   },
   "by_aspect": {
     "SCREEN": 2,
-    "GENERAL": 8,
+    "GENERAL": 9,
     "CAMERA": 4,
     "BATTERY": 3,
     "PERFORMANCE": 1,
-    "FEATURES": 1,
+    "FEATURES": 2,
     "PRICE": 2
   },
   "top_unresolved_objects": [],
   "absa_aspect_mentions": {
-    "BATTERY": 355,
-    "CAMERA": 115,
-    "PERFORMANCE": 372,
-    "SCREEN": 88,
-    "DESIGN": 150,
-    "PRICE": 135,
-    "GENERAL": 504,
-    "FEATURES": 328
+    "BATTERY": 376,
+    "CAMERA": 122,
+    "PERFORMANCE": 406,
+    "SCREEN": 95,
+    "DESIGN": 156,
+    "PRICE": 145,
+    "GENERAL": 526,
+    "FEATURES": 354
   }
 }

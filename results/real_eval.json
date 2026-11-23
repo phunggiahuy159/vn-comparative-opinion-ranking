@@ -1,14 +1,102 @@
 {
   "BATTERY": {
-    "beta": {}
+    "edr": {
+      "gamma": {
+        "BATTERY": 0.408,
+        "CAMERA": 0.476,
+        "PERFORMANCE": 0.416,
+        "SCREEN": 0.431
+      },
+      "gamma_mode": "learned (WEAK: <15 entity comparisons)",
+      "hedonic": {
+        "log_price": -0.079,
+        "brand:honor": -0.001,
+        "brand:iphone": 0.039,
+        "brand:masstel": 0.256,
+        "brand:mobell": -0.448,
+        "brand:motorola": 0.349,
+        "brand:nokia": -0.063,
+        "brand:oppo": 0.041,
+        "brand:realme": 0.05,
+        "brand:samsung": -0.311,
+        "brand:vivo": 0.345,
+        "brand:xiaomi": -0.022
+      }
+    }
   },
   "CAMERA": {
-    "beta": {}
+    "edr": {
+      "gamma": {
+        "BATTERY": 0.408,
+        "CAMERA": 0.476,
+        "PERFORMANCE": 0.416,
+        "SCREEN": 0.431
+      },
+      "gamma_mode": "learned (WEAK: <15 entity comparisons)",
+      "hedonic": {
+        "log_price": 0.106,
+        "brand:honor": -0.094,
+        "brand:iphone": -0.333,
+        "brand:masstel": 0.0,
+        "brand:mobell": 0.0,
+        "brand:motorola": -0.059,
+        "brand:nokia": -0.039,
+        "brand:oppo": -0.08,
+        "brand:realme": 0.005,
+        "brand:samsung": 0.346,
+        "brand:vivo": -0.174,
+        "brand:xiaomi": 0.121
+      }
+    }
   },
   "PERFORMANCE": {
-    "beta": {}
+    "edr": {
+      "gamma": {
+        "BATTERY": 0.408,
+        "CAMERA": 0.476,
+        "PERFORMANCE": 0.416,
+        "SCREEN": 0.431
+      },
+      "gamma_mode": "learned (WEAK: <15 entity comparisons)",
+      "hedonic": {
+        "log_price": 0.096,
+        "brand:honor": 0.126,
+        "brand:iphone": 0.01,
+        "brand:masstel": -0.135,
+        "brand:mobell": 0.068,
+        "brand:motorola": -0.014,
+        "brand:nokia": -0.313,
+        "brand:oppo": -0.087,
+        "brand:realme": 0.019,
+        "brand:samsung": 0.043,
+        "brand:vivo": -0.231,
+        "brand:xiaomi": -0.388
+      }
+    }
   },
   "SCREEN": {
-    "beta": {}
+    "edr": {
+      "gamma": {
+        "BATTERY": 0.408,
+        "CAMERA": 0.476,
+        "PERFORMANCE": 0.416,
+        "SCREEN": 0.431
+      },
+      "gamma_mode": "learned (WEAK: <15 entity comparisons)",
+      "hedonic": {
+        "log_price": 0.076,
+        "brand:honor": -0.033,
+        "brand:iphone": -0.118,
+        "brand:masstel": -0.043,
+        "brand:mobell": 0.433,
+        "brand:motorola": 0.016,
+        "brand:nokia": -0.048,
+        "brand:oppo": -0.222,
+        "brand:realme": 0.067,
+        "brand:samsung": -0.122,
+        "brand:vivo": -0.0,
+        "brand:xiaomi": 0.049
+      }
+    }
   }
 }
