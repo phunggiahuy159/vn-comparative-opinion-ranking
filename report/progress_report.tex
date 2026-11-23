@@ -144,18 +144,18 @@ While benchmark scores are being collected, we test rankers in a simulated marke
 \toprule
 Ranker & $\gamma{=}0$ & $\gamma{=}0.5$ & $\gamma{=}0.8$ \\
 \midrule
-Price only & .634 & .634 & .634 \\
-Sentiment only & .838 & .777 & .661 \\
-PageRank & .136 & .136 & .136 \\
-pRank & .841 & .778 & .664 \\
-Bradley--Terry (BT) & .521 & .521 & .521 \\
-BT + sentiment & .746 & .725 & .677 \\
-\textbf{EDR (ours)} & \textbf{.855} & \textbf{.833} & \textbf{.818} \\
+Price only & 0.634 & 0.634 & 0.634 \\
+Sentiment only & 0.838 & 0.777 & 0.661 \\
+PageRank & 0.136 & 0.136 & 0.136 \\
+pRank & 0.841 & 0.778 & 0.664 \\
+Bradley--Terry (BT) & 0.521 & 0.521 & 0.521 \\
+BT + sentiment & 0.746 & 0.725 & 0.677 \\
+\textbf{EDR (ours)} & \textbf{0.855} & \textbf{0.833} & \textbf{0.818} \\
 \midrule
-\quad $-$ $\gamma$ fixed at 0 & .856 & .789 & .683 \\
-\quad $-$ $\gamma$ learned jointly & .809 & .810 & .808 \\
-\quad $-$ no hedonic prior & .829 & .811 & .808 \\
-\quad selected $\gamma$ & .18 & .48 & .60 \\
+\quad $-$ $\gamma$ fixed at 0 & 0.856 & 0.789 & 0.683 \\
+\quad $-$ $\gamma$ learned jointly & 0.809 & 0.810 & 0.808 \\
+\quad $-$ no hedonic prior & 0.829 & 0.811 & 0.808 \\
+\quad selected $\gamma$ & 0.18 & 0.48 & 0.60 \\
 \bottomrule
 \end{tabular}
 \end{minipage}\hfill
@@ -167,8 +167,8 @@ BT + sentiment & .746 & .725 & .677 \\
 
 \paragraph{Findings so far.}
 (i)~EDR is the best ranker at every $\gamma$, including when reviewers judge absolutely ($\gamma=0$); pRank tracks sentiment and
-falls from .84 to .66 as $\gamma$ grows.
-(ii)~\textbf{Break-even} (Figure~\ref{fig:be}): EDR stays above ranking by price up to $\varepsilon=0.4$ (margin .17 shrinking to .04), while
+falls from 0.84 to 0.66 as $\gamma$ grows.
+(ii)~\textbf{Break-even} (Figure~\ref{fig:be}): EDR stays above ranking by price up to $\varepsilon=0.4$ (margin 0.17 shrinking to 0.04), while
 BT + sentiment falls below price at $\varepsilon\approx0.1$. This gives an accuracy target for comparative extraction.
 (iii)~\textbf{Loss aversion} (real data): regressing ViSFD star ratings on aspect polarity ($R^2=0.615$, $n=11{,}122$), negative mentions cost
 1.5--2.7$\times$ more stars than positive ones add (e.g.\ PERFORMANCE $+0.40/-0.61$), as prospect theory predicts \citep{kt1979}; DESIGN is the exception.
