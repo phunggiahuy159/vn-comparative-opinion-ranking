@@ -44,7 +44,7 @@ per aspect → validate against benchmarks (GSMArena / DXOMARK / AnTuTu). The co
    GSMArena battery hours, DXOMARK camera/display, AnTuTu → save as `data/benchmarks.csv`.
 4. **Request VCOM** (VLSP 2023 ComOM) from the organisers. It is the comparative-extraction benchmark and comes from VnExpress/Tinhte text.
 5. Revoke the GitHub token that was pasted into chat on 23/11 and use `gh auth login` instead.
-6. The repo https://github.com/phunggiahuy159/vn-comparative-opinion-ranking is **private**. Before the instructor opens the report link, make it public (`gh repo edit --visibility public`) or add the instructor as a collaborator.
+6. The repo https://github.com/phunggiahuy159/vn-comparative-opinion-ranking is **public** (since 23/11); the report links to it. Keep scraped data, checkpoints and slides out of git (see .gitignore).
 
 ## 5. Next steps (in order)
 1. When prices finish: `python src/pipeline_real.py && python src/real_rank.py` (EDR then learns β_price per aspect).
