@@ -171,7 +171,7 @@ Bradley--Terry + sentiment & .746 & .725 & .677 \\
 \begin{subfigure}{0.49\textwidth}\includegraphics[width=\linewidth]{sparsity.pdf}\caption{Data volume ($\gamma=0.8$, $\varepsilon=0.1$).}\end{subfigure}
 \begin{subfigure}{0.34\textwidth}\includegraphics[width=\linewidth]{calibration.pdf}\caption{Calibration.}\end{subfigure}
 \caption{Synthetic results (mean $\pm$ s.e.). EDR stays above ranking by price at every tested error rate (margin .17 at $\varepsilon=0$, .04 at $0.4$). Bradley--Terry + sentiment
-falls below price at $\varepsilon\approx0.1$, and pRank tracks sentiment. EDR's pairwise probabilities are close to calibrated.}
+falls below price at $\varepsilon\approx0.1$, and pRank tracks sentiment. EDR's pairwise probabilities are roughly calibrated (ECE 0.08) but somewhat overconfident at the extremes.}
 \end{figure}
 
 \subsection{Real data}
