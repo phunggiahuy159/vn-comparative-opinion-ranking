@@ -1,7 +1,7 @@
 {
   "reviews": 1414,
   "products": 102,
-  "products_with_price": 99,
+  "products_with_price": 102,
   "products_>=20_reviews": 23,
   "rule_tuples_with_object": 23,
   "linked_comparisons": 23,

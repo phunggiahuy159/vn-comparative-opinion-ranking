@@ -68,3 +68,14 @@ per aspect → validate against benchmarks (GSMArena / DXOMARK / AnTuTu). The co
 - Report honestly: synthetic studies show mechanisms only. Real accuracy claims need the benchmark correlations.
 - Commits: author `phunggiahuy159 <phunggiahuy.15092005@gmail.com>`, **no co-author trailer** (owner's request).
 - Python env: `uv venv --python 3.11 .venv`. The LaTeX report builds with `tectonic` (XeLaTeX).
+
+## Real-data run, 23/11 evening (spec crawl complete)
+- Crawls: 279/279 phone pages (271 spec sheets, 277 prices); reviews: 1,414 usable of 102 models, 39 with ≥10 reviews. VnExpress still crawling (~500 articles).
+- `src/pipeline_real.py` now takes prices from `data/tgdd_products_specs.jsonl` first (102/102 priced).
+- `src/real_rank.py` vs spec proxies (Spearman, 95% bootstrap CI), smartphones with ≥10 reviews:
+  - BATTERY vs mAh (n=21): price −.12, sentiment .20, pRank .20, EDR .16 (all CIs cross 0)
+  - SCREEN vs nits (n=20): price .63, sentiment .64, pRank .64, EDR .41 [−.14, .80]
+  - CAMERA vs main MP (weak proxy, n=32): price −.39, sentiment .35, pRank .34, EDR .40 [.09, .65]
+  - PERFORMANCE: needs `data/chip_antutu.csv` (template lists 52 chips).
+- Reading: price fails on battery/camera as predicted; with 0 head-to-head comparisons γ cannot be refereed and the CIs overlap, so real data does not yet separate rankers. Needed: expert-article comparisons (LLM on Kaggle, queued) and/or a second review source (FPT Shop / CellphoneS — awaiting owner decision).
+- Final report §5.3 has this as a preliminary table.

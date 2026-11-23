@@ -175,7 +175,25 @@ falls below price at $\varepsilon\approx0.1$, and pRank tracks sentiment. EDR's 
 \end{figure}
 
 \subsection{Real data}
-\todo{spec-proxy and benchmark correlations per aspect with bootstrap CIs; learned $\gamma_a$ and hedonic slopes; rank-interval figure}
+\paragraph{Corpus.} The crawl covers all 279 phone pages listed on thegioididong.com but yields only 1{,}414 usable reviews of 102 models;
+39 models have at least 10 reviews, and spec sheets give ground-truth proxies for 66 (battery), 55 (screen) and 86 (camera) of them.
+The rules find 23 linked comparisons, none between two catalogue phones, so on buyer reviews alone EDR runs without head-to-head evidence
+and $\gamma$ cannot be refereed (it falls back to the joint estimate).
+
+\begin{table}[h]\centering\small\setlength{\tabcolsep}{4pt}
+\caption{Preliminary real-data results: Spearman $\rho$ (95\% bootstrap CI) between each ranking and the spec-sheet proxy,
+smartphones with ${\ge}10$ reviews. No head-to-head comparisons yet, so Bradley--Terry is undefined.}\label{tab:real}
+\begin{tabular}{@{}llcccc@{}}\toprule
+Aspect & Proxy ($n$) & Price only & Sentiment & pRank & EDR \\\midrule
+Battery & mAh (21) & $-.12$ {\scriptsize[$-.58$, .46]} & .20 {\scriptsize[$-.22$, .59]} & .20 {\scriptsize[$-.22$, .59]} & .16 {\scriptsize[$-.31$, .58]} \\
+Screen & peak nits (20) & .63 {\scriptsize[.17, .91]} & .64 {\scriptsize[.29, .84]} & .64 {\scriptsize[.28, .85]} & .41 {\scriptsize[$-.14$, .80]} \\
+Camera & main MP, weak (32) & $-.39$ {\scriptsize[$-.71$, $-.02$]} & .35 {\scriptsize[.06, .59]} & .34 {\scriptsize[.06, .57]} & .40 {\scriptsize[.09, .65]} \\
+\bottomrule\end{tabular}\end{table}
+
+\paragraph{Reading.} Price fails exactly where the simulation predicts: budget phones have the biggest batteries and the most megapixels,
+so ranking by price is negatively correlated with both. Review-based rankings recover part of the signal. With about 20 phones per aspect and
+mostly fewer than 10 aspect mentions per phone, all confidence intervals overlap, so these numbers do not yet separate the rankers.
+\todo{rerun with expert-article comparisons (LLM extraction) and a second review source; chip $\to$ AnTuTu for performance}
 
 \section{Findings about Vietnamese buyers}
 \paragraph{Loss aversion.} Regressing star ratings on aspect polarity in ViSFD ($R^2=0.615$, $n=11{,}122$) shows that negative mentions cost

@@ -182,6 +182,7 @@
    "oppo reno15f 5g",
    "xiaomi redmi note 17 pro 5g",
    "oppo a6 pro",
+   "realme 15t 5g",
    "xiaomi redmi note 15 pro 5g",
    "samsung galaxy a17 5g",
    "motorola edge 60 fusion",
@@ -202,8 +203,7 @@
    "mobell f309",
    "masstel fami 50",
    "masstel izi t6",
-   "mobell m331",
-   "realme 15t 5g"
+   "mobell m331"
   ]
  },
  "CAMERA": {
@@ -332,8 +332,8 @@
   ],
   "EDR": [
    "samsung galaxy s25 ultra",
-   "samsung galaxy a17",
    "samsung galaxy s25 fe 5g",
+   "samsung galaxy a17",
    "xiaomi 17",
    "xiaomi redmi note 17 pro 5g",
    "oppo find n3 flip",
@@ -358,16 +358,16 @@
    "xiaomi redmi 15c",
    "masstel fami 50",
    "mobell m331",
-   "masstel izi t6",
-   "nokia hmd 105 4g",
    "xiaomi redmi note 15 pro",
+   "masstel izi t6",
    "iphone 17 pro",
+   "nokia hmd 105 4g",
    "oppo reno15f 5g",
    "iphone 16e",
    "iphone 17",
-   "nokia 110 4g pro",
    "oppo reno13 5g",
    "vivo y39 5g",
+   "nokia 110 4g pro",
    "nokia 105 4g pro",
    "iphone 16"
   ],
@@ -389,6 +389,7 @@
    "oppo reno15f 5g",
    "xiaomi redmi note 17 pro 5g",
    "oppo a6 pro",
+   "realme 15t 5g",
    "xiaomi redmi note 15 pro 5g",
    "samsung galaxy a17 5g",
    "motorola edge 60 fusion",
@@ -409,8 +410,7 @@
    "mobell f309",
    "masstel fami 50",
    "masstel izi t6",
-   "mobell m331",
-   "realme 15t 5g"
+   "mobell m331"
   ]
  },
  "PERFORMANCE": {
@@ -596,6 +596,7 @@
    "oppo reno15f 5g",
    "xiaomi redmi note 17 pro 5g",
    "oppo a6 pro",
+   "realme 15t 5g",
    "xiaomi redmi note 15 pro 5g",
    "samsung galaxy a17 5g",
    "motorola edge 60 fusion",
@@ -616,8 +617,7 @@
    "mobell f309",
    "masstel fami 50",
    "masstel izi t6",
-   "mobell m331",
-   "realme 15t 5g"
+   "mobell m331"
   ]
  },
  "SCREEN": {
@@ -753,8 +753,8 @@
    "xiaomi redmi note 17 pro 5g",
    "motorola g06 power",
    "realme 15t 5g",
-   "motorola moto g86 5g",
    "realme c85 pro",
+   "motorola moto g86 5g",
    "iphone 17 pro",
    "iphone 15",
    "iphone 17",
@@ -803,6 +803,7 @@
    "oppo reno15f 5g",
    "xiaomi redmi note 17 pro 5g",
    "oppo a6 pro",
+   "realme 15t 5g",
    "xiaomi redmi note 15 pro 5g",
    "samsung galaxy a17 5g",
    "motorola edge 60 fusion",
@@ -823,8 +824,7 @@
    "mobell f309",
    "masstel fami 50",
    "masstel izi t6",
-   "mobell m331",
-   "realme 15t 5g"
+   "mobell m331"
   ]
  }
 }
