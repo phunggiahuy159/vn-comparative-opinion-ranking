@@ -41,7 +41,7 @@ Nguyễn Bình Anh \\ \textnormal{20235470} \AND
 
 %==================================================================================================
 \section{Problem statement}
-As stated in our proposal, we mine Vietnamese smartphone reviews to
+We mine Vietnamese smartphone reviews to
 (i)~extract \textbf{aspects} and the \textbf{sentiment} toward each aspect,
 (ii)~extract \textbf{comparative opinions} between products (\emph{``pin trâu hơn con A50''}), and
 (iii)~model the comparisons as a per-aspect \textbf{product graph} that ranks phones by battery, camera, performance and screen.
@@ -62,9 +62,9 @@ The rankings are \textbf{validated against objective benchmarks} (battery tests,
 \end{center}
 \vspace{-6pt}
 
-\paragraph{Positioning.} \citet{zhang2010} rank English Amazon products per feature with \emph{pRank}: PageRank on a graph of comparative
-sentences, multiplied by a node weight (ratio of positive to negative sentences). We reproduce pRank as a baseline and do not claim the graph
-idea as new. Our contributions:
+\paragraph{Related work and contributions.} \citet{zhang2010} rank English Amazon products per feature with \emph{pRank}, a PageRank
+variant on a graph of comparative sentences whose scores are weighted by the ratio of positive to negative sentences; we use it as our main baseline.
+Our contributions are:
 (1)~the Vietnamese setting: analytic comparatives (\emph{hơn / không bằng / thua}), direction-reversing predicates (\emph{``nóng hơn''}),
 implicit subjects (\emph{``con này''});
 (2)~evaluation against objective benchmarks rather than expert opinion;
@@ -129,7 +129,7 @@ P(S_w\succ S_l) &= (1-\varepsilon)\,\sigma(\bar\theta_{S_w}-\bar\theta_{S_l})+\v
 \end{align*}
 Here $\mathbf{x}_p$ is z-scored log price and brand, a side $S$ may be a brand set, and $\varepsilon$ is the extraction error rate \citep{bt1952}.
 $\gamma_a\in[0,1]$ is a \textbf{price-relativity index}. Learned jointly it is weakly identified; since head-to-head comparisons are not
-price-relative, we choose $\gamma_a$ by 5-fold held-out comparison likelihood (\emph{comparisons referee the sentiment model}).
+price-relative, we choose $\gamma_a$ by 5-fold held-out comparison likelihood.
 MAP fitting (L-BFGS) and a Laplace posterior give $P(A\succ B)$ and rank intervals.
 
 \subsection{Controlled simulation}
@@ -166,10 +166,10 @@ BT + sentiment & .746 & .725 & .677 \\
 \end{center}
 
 \paragraph{Findings so far.}
-(i)~EDR is the best ranker at every $\gamma$ and loses nothing when reviewers judge absolutely ($\gamma=0$); pRank tracks sentiment and
+(i)~EDR is the best ranker at every $\gamma$, including when reviewers judge absolutely ($\gamma=0$); pRank tracks sentiment and
 falls from .84 to .66 as $\gamma$ grows.
 (ii)~\textbf{Break-even} (Figure~\ref{fig:be}): EDR stays above ranking by price up to $\varepsilon=0.4$ (margin .17 shrinking to .04), while
-BT + sentiment falls below price at $\varepsilon\approx0.1$. This sets a concrete accuracy target for extraction.
+BT + sentiment falls below price at $\varepsilon\approx0.1$. This gives an accuracy target for comparative extraction.
 (iii)~\textbf{Loss aversion} (real data): regressing ViSFD star ratings on aspect polarity ($R^2=0.615$, $n=11{,}122$), negative mentions cost
 1.5--2.7$\times$ more stars than positive ones add (e.g.\ PERFORMANCE $+0.40/-0.61$), as prospect theory predicts \citep{kt1979}; DESIGN is the exception.
 (iv)~\textbf{Reference points} (real data): of 23 linked comparisons in buyer reviews, 13 target the reviewer's older phone, 9 a brand and only 1

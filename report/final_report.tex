@@ -50,8 +50,8 @@ The prior approach ranks products by PageRank over a comparative-sentence graph 
 a joint model grounded in consumer-satisfaction theory. A latent quality explains both head-to-head comparisons (Bradley--Terry)
 and sentiment, where sentiment reflects quality relative to the expectation set by price and brand. The degree of price-relativity
 $\gamma$ is chosen by how well the model predicts held-out comparisons, and a Laplace posterior yields calibrated pairwise probabilities and rank intervals.
-In controlled simulations EDR is the best ranker in every setting (Spearman 0.82--0.86 vs.\ 0.66--0.84 for pRank) and does no harm when reviewers
-judge absolutely. A break-even analysis shows that EDR stays above simply ranking by price up to a 40\% extraction error, while a naive
+In controlled simulations EDR is the best ranker in every setting (Spearman 0.82--0.86 vs.\ 0.66--0.84 for pRank) including when reviewers
+judge absolutely. A break-even analysis shows that EDR stays above ranking by price up to a 40\% extraction error, while a
 Bradley--Terry + sentiment combination falls below it at about 10\%. On real data we report two behavioural findings: negative aspect mentions cost 1.5--2.7$\times$ more stars
 than positive ones add (loss aversion), and buyers compare against their previous phone or a brand rather than against competitors.
 \todo{one sentence on real benchmark / spec-proxy results}
@@ -68,8 +68,8 @@ A ranking that averages sentiment therefore answers ``which phone pleased its bu
 (1)~A Vietnamese pipeline for aspect sentiment, comparative quintuples and product-mention linking, including implicit subjects.
 (2)~An analysis of graph-based comparative ranking: PageRank measures popularity, and pRank \citep{zhang2010} reduces to sentiment ranking
 and fails under price-relative sentiment.
-(3)~EDR, a theory-grounded joint model with interpretable parameters (hedonic price curve, price-relativity $\gamma$), where comparisons referee
-the sentiment model, and with calibrated uncertainty.
+(3)~EDR, a theory-grounded joint model with interpretable parameters (hedonic price curve, price-relativity $\gamma$), where held-out comparisons select
+the price-relativity, and with calibrated uncertainty.
 (4)~A break-even analysis that links extraction accuracy (an NLP metric) to ranking quality (the end goal).
 (5)~Behavioural findings on Vietnamese buyers.
 
@@ -129,7 +129,7 @@ P(S_w\succ S_l) &= (1-\varepsilon_s)\,\sigma(\bar\theta_{S_w}-\bar\theta_{S_l}) 
 Here $\mathbf{x}_p$ holds the z-scored log price and brand indicators, $S$ is a product or a brand set ($\bar\theta$ is the set mean), and $\varepsilon_s$ is the
 direction-error rate of source $s$, measured on gold annotations. Sentiment counts enter through a binomial likelihood.
 \paragraph{Interpretation.} $\gamma_a\in[0,1]$ is a \emph{price-relativity index}: $\gamma=0$ means absolute judgements, and $\gamma=1$ means ``good for the price''.
-\paragraph{Comparisons referee the sentiment model.} Learned jointly, $\gamma$ is weakly identified (Section~\ref{sec:synthetic}).
+\paragraph{Selecting $\gamma$.} Learned jointly, $\gamma$ is weakly identified (Section~\ref{sec:synthetic}).
 Head-to-head comparisons are not price-relative, so we choose $\gamma$ from a grid by $K$-fold held-out comparison log-likelihood.
 \paragraph{Inference.} We fit by MAP (L-BFGS). A Laplace approximation of the posterior over $\boldsymbol\theta$ gives $P(\theta_i>\theta_j)$ and credible rank intervals.
 
@@ -178,7 +178,7 @@ falls below price at $\varepsilon\approx0.1$, and pRank tracks sentiment. EDR's 
 \paragraph{Corpus.} The crawl covers all 279 phone pages listed on thegioididong.com but yields only 1{,}414 usable reviews of 102 models;
 39 models have at least 10 reviews, and spec sheets give ground-truth proxies for 66 (battery), 55 (screen) and 86 (camera) of them.
 The rules find 23 linked comparisons, none between two catalogue phones, so on buyer reviews alone EDR runs without head-to-head evidence
-and $\gamma$ cannot be refereed (it falls back to the joint estimate).
+and $\gamma$ cannot be selected by held-out comparisons (we fall back to the joint estimate).
 
 \begin{table}[h]\centering\small\setlength{\tabcolsep}{4pt}
 \caption{Preliminary real-data results: Spearman $\rho$ (95\% bootstrap CI) between each ranking and the spec-sheet proxy,
@@ -190,9 +190,9 @@ Screen & peak nits (20) & .63 {\scriptsize[.17, .91]} & .64 {\scriptsize[.29, .8
 Camera & main MP, weak (32) & $-.39$ {\scriptsize[$-.71$, $-.02$]} & .35 {\scriptsize[.06, .59]} & .34 {\scriptsize[.06, .57]} & .40 {\scriptsize[.09, .65]} \\
 \bottomrule\end{tabular}\end{table}
 
-\paragraph{Reading.} Price fails exactly where the simulation predicts: budget phones have the biggest batteries and the most megapixels,
+\paragraph{Discussion.} Price fails where the simulation predicts: budget phones have the biggest batteries and the most megapixels,
 so ranking by price is negatively correlated with both. Review-based rankings recover part of the signal. With about 20 phones per aspect and
-mostly fewer than 10 aspect mentions per phone, all confidence intervals overlap, so these numbers do not yet separate the rankers.
+mostly fewer than 10 aspect mentions per phone, the confidence intervals overlap and the rankers are not yet distinguishable.
 \todo{rerun with expert-article comparisons (LLM extraction) and a second review source; chip $\to$ AnTuTu for performance}
 
 \section{Findings about Vietnamese buyers}
