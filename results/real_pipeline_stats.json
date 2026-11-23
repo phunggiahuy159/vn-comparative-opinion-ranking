@@ -1,8 +1,12 @@
 {
-  "reviews": 1414,
+  "reviews": 1894,
+  "reviews_by_source": {
+    "tgdd": 1414,
+    "cellphones": 480
+  },
   "products": 102,
   "products_with_price": 102,
-  "products_>=20_reviews": 23,
+  "products_>=20_reviews": 28,
   "rule_tuples_with_object": 23,
   "linked_comparisons": 23,
   "edge_kinds": {
@@ -24,13 +28,13 @@
   },
   "top_unresolved_objects": [],
   "absa_aspect_mentions": {
-    "BATTERY": 376,
-    "CAMERA": 122,
-    "PERFORMANCE": 406,
-    "SCREEN": 95,
-    "DESIGN": 156,
-    "PRICE": 145,
-    "GENERAL": 526,
-    "FEATURES": 354
+    "BATTERY": 416,
+    "CAMERA": 168,
+    "PERFORMANCE": 453,
+    "SCREEN": 117,
+    "DESIGN": 220,
+    "PRICE": 178,
+    "GENERAL": 723,
+    "FEATURES": 386
   }
 }

@@ -3,34 +3,34 @@
     "edr": {
       "gamma": {
         "BATTERY": 0.408,
-        "CAMERA": 0.473,
-        "PERFORMANCE": 0.417,
-        "SCREEN": 0.431
+        "CAMERA": 0.497,
+        "PERFORMANCE": 0.439,
+        "SCREEN": 0.426
       },
       "gamma_mode": "learned (WEAK: <15 entity comparisons)",
       "hedonic": {
-        "log_price": -0.08,
-        "brand:honor": -0.0,
-        "brand:iphone": 0.041,
-        "brand:masstel": 0.255,
-        "brand:mobell": -0.449,
-        "brand:motorola": 0.349,
-        "brand:nokia": -0.066,
+        "log_price": -0.073,
+        "brand:honor": 0.009,
+        "brand:iphone": 0.113,
+        "brand:masstel": 0.163,
+        "brand:mobell": -0.479,
+        "brand:motorola": 0.362,
+        "brand:nokia": -0.18,
         "brand:oppo": 0.042,
-        "brand:realme": 0.054,
-        "brand:samsung": -0.311,
-        "brand:vivo": 0.344,
-        "brand:xiaomi": -0.022
+        "brand:realme": 0.083,
+        "brand:samsung": -0.13,
+        "brand:vivo": 0.356,
+        "brand:xiaomi": -0.108
       }
     },
     "proxy": {
       "target": "battery mAh",
-      "n": 21,
+      "n": 23,
       "sentiment": {
-        "spearman": 0.204,
+        "spearman": 0.042,
         "ci95": [
-          -0.218,
-          0.585
+          -0.358,
+          0.459
         ]
       },
       "Bradley-Terry": {
@@ -41,24 +41,24 @@
         ]
       },
       "pRank": {
-        "spearman": 0.198,
+        "spearman": 0.056,
         "ci95": [
-          -0.222,
-          0.586
+          -0.321,
+          0.45
         ]
       },
       "EDR": {
-        "spearman": 0.161,
+        "spearman": 0.061,
         "ci95": [
-          -0.308,
-          0.583
+          -0.306,
+          0.449
         ]
       },
       "price only": {
-        "spearman": -0.115,
+        "spearman": -0.097,
         "ci95": [
-          -0.575,
-          0.46
+          -0.5,
+          0.352
         ]
       }
     }
@@ -67,34 +67,34 @@
     "edr": {
       "gamma": {
         "BATTERY": 0.408,
-        "CAMERA": 0.473,
-        "PERFORMANCE": 0.417,
-        "SCREEN": 0.431
+        "CAMERA": 0.497,
+        "PERFORMANCE": 0.439,
+        "SCREEN": 0.426
       },
       "gamma_mode": "learned (WEAK: <15 entity comparisons)",
       "hedonic": {
-        "log_price": 0.121,
-        "brand:honor": -0.096,
-        "brand:iphone": -0.342,
+        "log_price": 0.041,
+        "brand:honor": -0.081,
+        "brand:iphone": -0.113,
         "brand:masstel": 0.0,
         "brand:mobell": -0.0,
-        "brand:motorola": -0.056,
-        "brand:nokia": -0.035,
-        "brand:oppo": -0.083,
-        "brand:realme": 0.002,
-        "brand:samsung": 0.344,
+        "brand:motorola": -0.074,
+        "brand:nokia": 0.08,
+        "brand:oppo": -0.064,
+        "brand:realme": 0.006,
+        "brand:samsung": 0.249,
         "brand:vivo": -0.174,
-        "brand:xiaomi": 0.12
+        "brand:xiaomi": 0.135
       }
     },
     "proxy": {
       "target": "main MP (weak)",
-      "n": 32,
+      "n": 35,
       "sentiment": {
-        "spearman": 0.345,
+        "spearman": 0.242,
         "ci95": [
-          0.063,
-          0.587
+          -0.045,
+          0.483
         ]
       },
       "Bradley-Terry": {
@@ -105,24 +105,24 @@
         ]
       },
       "pRank": {
-        "spearman": 0.335,
+        "spearman": 0.234,
         "ci95": [
-          0.059,
-          0.565
+          -0.044,
+          0.475
         ]
       },
       "EDR": {
-        "spearman": 0.396,
+        "spearman": 0.185,
         "ci95": [
-          0.086,
-          0.652
+          -0.147,
+          0.472
         ]
       },
       "price only": {
-        "spearman": -0.389,
+        "spearman": -0.298,
         "ci95": [
-          -0.712,
-          -0.016
+          -0.645,
+          0.091
         ]
       }
     }
@@ -131,24 +131,24 @@
     "edr": {
       "gamma": {
         "BATTERY": 0.408,
-        "CAMERA": 0.473,
-        "PERFORMANCE": 0.417,
-        "SCREEN": 0.431
+        "CAMERA": 0.497,
+        "PERFORMANCE": 0.439,
+        "SCREEN": 0.426
       },
       "gamma_mode": "learned (WEAK: <15 entity comparisons)",
       "hedonic": {
-        "log_price": 0.094,
-        "brand:honor": 0.127,
-        "brand:iphone": 0.013,
-        "brand:masstel": -0.135,
-        "brand:mobell": 0.067,
-        "brand:motorola": -0.015,
-        "brand:nokia": -0.315,
-        "brand:oppo": -0.086,
-        "brand:realme": 0.017,
-        "brand:samsung": 0.043,
-        "brand:vivo": -0.231,
-        "brand:xiaomi": -0.387
+        "log_price": 0.189,
+        "brand:honor": 0.109,
+        "brand:iphone": -0.066,
+        "brand:masstel": -0.123,
+        "brand:mobell": 0.115,
+        "brand:motorola": -0.016,
+        "brand:nokia": -0.115,
+        "brand:oppo": -0.126,
+        "brand:realme": 0.007,
+        "brand:samsung": 0.034,
+        "brand:vivo": -0.233,
+        "brand:xiaomi": -0.286
       }
     }
   },
@@ -156,34 +156,34 @@
     "edr": {
       "gamma": {
         "BATTERY": 0.408,
-        "CAMERA": 0.473,
-        "PERFORMANCE": 0.417,
-        "SCREEN": 0.431
+        "CAMERA": 0.497,
+        "PERFORMANCE": 0.439,
+        "SCREEN": 0.426
       },
       "gamma_mode": "learned (WEAK: <15 entity comparisons)",
       "hedonic": {
-        "log_price": 0.076,
-        "brand:honor": -0.032,
-        "brand:iphone": -0.116,
-        "brand:masstel": -0.042,
-        "brand:mobell": 0.433,
-        "brand:motorola": 0.015,
-        "brand:nokia": -0.048,
-        "brand:oppo": -0.222,
-        "brand:realme": 0.067,
-        "brand:samsung": -0.122,
-        "brand:vivo": -0.0,
-        "brand:xiaomi": 0.049
+        "log_price": 0.155,
+        "brand:honor": -0.031,
+        "brand:iphone": -0.157,
+        "brand:masstel": -0.002,
+        "brand:mobell": 0.453,
+        "brand:motorola": 0.019,
+        "brand:nokia": -0.069,
+        "brand:oppo": -0.212,
+        "brand:realme": 0.069,
+        "brand:samsung": -0.037,
+        "brand:vivo": 0.0,
+        "brand:xiaomi": 0.016
       }
     },
     "proxy": {
       "target": "peak nits",
-      "n": 20,
+      "n": 21,
       "sentiment": {
-        "spearman": 0.637,
+        "spearman": 0.663,
         "ci95": [
-          0.289,
-          0.838
+          0.402,
+          0.833
         ]
       },
       "Bradley-Terry": {
@@ -194,24 +194,24 @@
         ]
       },
       "pRank": {
-        "spearman": 0.638,
+        "spearman": 0.664,
         "ci95": [
-          0.277,
-          0.854
+          0.402,
+          0.838
         ]
       },
       "EDR": {
-        "spearman": 0.412,
+        "spearman": 0.547,
         "ci95": [
-          -0.142,
-          0.8
+          0.108,
+          0.807
         ]
       },
       "price only": {
-        "spearman": 0.632,
+        "spearman": 0.634,
         "ci95": [
-          0.172,
-          0.91
+          0.182,
+          0.912
         ]
       }
     }

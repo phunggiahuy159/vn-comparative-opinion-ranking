@@ -79,3 +79,10 @@ per aspect → validate against benchmarks (GSMArena / DXOMARK / AnTuTu). The co
   - PERFORMANCE: needs `data/chip_antutu.csv` (template lists 52 chips).
 - Reading: price fails on battery/camera as predicted; with 0 head-to-head comparisons γ cannot be refereed and the CIs overlap, so real data does not yet separate rankers. Needed: expert-article comparisons (LLM on Kaggle, queued) and/or a second review source (FPT Shop / CellphoneS — awaiting owner decision).
 - Final report §5.3 has this as a preliminary table.
+
+## Second review source (23/11 night)
+- `src/crawl_cellphones.py`: CellphoneS public review pages (`<slug>/review`; robots.txt allows; no query strings; 5 s delay; no reviewer identities). 59/102 catalogue models matched via the public sitemaps; 480 reviews. FPT Shop was checked and skipped (comments are mostly store questions, no ratings).
+- Corpus now 1,894 reviews (tgdd 1,414 + cellphones 480); 43 models with ≥10 reviews; still 0 head-to-head comparisons between catalogue phones.
+- Spec-proxy Spearman (n≈21–35): BATTERY all ≈ 0 (price −.10); SCREEN sentiment .66, pRank .66, EDR .55, price .63; CAMERA sentiment .24, EDR .19, price −.30. EDR does not beat sentiment on real data without comparisons.
+- Next lever: head-to-head comparisons from the 708 VnExpress articles (LLM extraction; Kaggle still queued — CPU Qwen2.5-3B is the fallback, needs owner OK).
+- Known gap: iPhone 15 got 29/102 CellphoneS reviews ("Xem thêm" stopped responding after 6 pages).

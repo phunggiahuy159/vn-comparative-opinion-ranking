@@ -175,23 +175,25 @@ falls below price at $\varepsilon\approx0.1$, and pRank tracks sentiment. EDR's 
 \end{figure}
 
 \subsection{Real data}
-\paragraph{Corpus.} The crawl covers all 279 phone pages listed on thegioididong.com but yields only 1{,}414 usable reviews of 102 models;
-39 models have at least 10 reviews, and spec sheets give ground-truth proxies for 66 (battery), 55 (screen) and 86 (camera) of them.
+\paragraph{Corpus.} We crawl all 279 phone pages listed on thegioididong.com (1{,}414 usable reviews of 102 models) and add
+480 reviews of 59 of these models from CellphoneS, for 1{,}894 reviews in total; 43 models have at least 10 reviews.
+Spec sheets give ground-truth proxies for 66 (battery), 55 (screen) and 86 (camera) models.
 The rules find 23 linked comparisons, none between two catalogue phones, so on buyer reviews alone EDR runs without head-to-head evidence
 and $\gamma$ cannot be selected by held-out comparisons (we fall back to the joint estimate).
 
 \begin{table}[h]\centering\small\setlength{\tabcolsep}{4pt}
 \caption{Preliminary real-data results: Spearman $\rho$ (95\% bootstrap CI) between each ranking and the spec-sheet proxy,
-smartphones with ${\ge}10$ reviews. No head-to-head comparisons yet, so Bradley--Terry is undefined.}\label{tab:real}
+smartphones with ${\ge}10$ reviews from both stores. Without head-to-head comparisons Bradley--Terry is undefined.}\label{tab:real}
 \begin{tabular}{@{}llcccc@{}}\toprule
 Aspect & Proxy ($n$) & Price only & Sentiment & pRank & EDR \\\midrule
-Battery & mAh (21) & $-.12$ {\scriptsize[$-.58$, .46]} & .20 {\scriptsize[$-.22$, .59]} & .20 {\scriptsize[$-.22$, .59]} & .16 {\scriptsize[$-.31$, .58]} \\
-Screen & peak nits (20) & .63 {\scriptsize[.17, .91]} & .64 {\scriptsize[.29, .84]} & .64 {\scriptsize[.28, .85]} & .41 {\scriptsize[$-.14$, .80]} \\
-Camera & main MP, weak (32) & $-.39$ {\scriptsize[$-.71$, $-.02$]} & .35 {\scriptsize[.06, .59]} & .34 {\scriptsize[.06, .57]} & .40 {\scriptsize[.09, .65]} \\
+Battery & mAh (23) & $-.10$ {\scriptsize[$-.50$, .35]} & .04 {\scriptsize[$-.36$, .46]} & .06 {\scriptsize[$-.32$, .45]} & .06 {\scriptsize[$-.31$, .45]} \\
+Screen & peak nits (21) & .63 {\scriptsize[.18, .91]} & .66 {\scriptsize[.40, .83]} & .66 {\scriptsize[.40, .84]} & .55 {\scriptsize[.11, .81]} \\
+Camera & main MP, weak (35) & $-.30$ {\scriptsize[$-.65$, .09]} & .24 {\scriptsize[$-.05$, .48]} & .23 {\scriptsize[$-.04$, .48]} & .19 {\scriptsize[$-.15$, .47]} \\
 \bottomrule\end{tabular}\end{table}
 
 \paragraph{Discussion.} Price fails where the simulation predicts: budget phones have the biggest batteries and the most megapixels,
-so ranking by price is negatively correlated with both. Review-based rankings recover part of the signal. With about 20 phones per aspect and
+so ranking by price is negatively correlated with both. Review-based rankings recover a clear signal only for the screen, and
+EDR does not improve on sentiment ranking here: without comparisons it cannot tell price-relative from absolute praise. With about 20 phones per aspect and
 mostly fewer than 10 aspect mentions per phone, the confidence intervals overlap and the rankers are not yet distinguishable.
 \todo{rerun with expert-article comparisons (LLM extraction) and a second review source; chip $\to$ AnTuTu for performance}
 
