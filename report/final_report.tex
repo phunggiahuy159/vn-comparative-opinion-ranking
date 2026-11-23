@@ -139,6 +139,8 @@ Head-to-head comparisons are not price-relative, so we choose $\gamma$ from a gr
 \begin{center}\small
 \begin{tabular}{@{}lcc@{}}\toprule
 Model & Aspect detection micro-F1 & Aspect\#polarity micro-F1\\\midrule
+TF-IDF + multinomial Naive Bayes & 0.709 & 0.600\\
+TF-IDF + linear SVM & 0.822 & 0.713\\
 TF-IDF + logistic regression & 0.829 & 0.710\\
 PhoBERT-base-v2, multi-task & \textbf{0.890} & \textbf{0.815}\\
 \multicolumn{3}{@{}l}{\todo{PhoBERT-large / XLM-R, 3 seeds (Kaggle)}} \\\bottomrule
@@ -183,7 +185,7 @@ and $\gamma$ cannot be selected by held-out comparisons (we fall back to the joi
 
 \begin{table}[h]\centering\small\setlength{\tabcolsep}{4pt}
 \caption{Preliminary real-data results: Spearman $\rho$ (95\% bootstrap CI) between each ranking and the spec-sheet proxy,
-smartphones with ${\ge}10$ reviews from both stores. Without head-to-head comparisons Bradley--Terry is undefined.}\label{tab:real}
+smartphones with ${\ge}10$ reviews from both stores. Without head-to-head comparisons, PageRank, HITS and Bradley--Terry are undefined.}\label{tab:real}
 \begin{tabular}{@{}llcccc@{}}\toprule
 Aspect & Proxy ($n$) & Price only & Sentiment & pRank & EDR \\\midrule
 Battery & mAh (23) & $-0.10$ {\scriptsize[$-0.50$, 0.35]} & 0.04 {\scriptsize[$-0.36$, 0.46]} & 0.06 {\scriptsize[$-0.32$, 0.45]} & 0.06 {\scriptsize[$-0.31$, 0.45]} \\

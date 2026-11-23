@@ -99,13 +99,15 @@ compare against a named phone.
 All code, configurations and result files are in the repository: \url{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}.
 \subsection{Aspect-based sentiment analysis}
 Our model is \textbf{PhoBERT-base-v2} \citep{phobert} trained \textbf{multi-task}: a shared encoder ([CLS] + mean pooling) feeds one 4-way head
-per aspect (none/pos/neg/neu), with a class-weighted loss and pyvi segmentation. The baseline is TF-IDF + logistic regression per aspect.
+per aspect (none/pos/neg/neu), with a class-weighted loss and pyvi segmentation. Baselines use TF-IDF features with one classifier per aspect.
 \begin{center}\small\setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lcccccc@{}}
 \toprule
 UIT-ViSFD test, micro-F1 & Detection & Aspect\#polarity & Battery & Camera & Perf. & Screen \\
 \midrule
-TF-IDF + LR & 0.829 & 0.710 & -- & -- & -- & -- \\
+TF-IDF + multinomial NB & 0.709 & 0.600 & -- & -- & -- & -- \\
+TF-IDF + linear SVM & 0.822 & 0.713 & -- & -- & -- & -- \\
+TF-IDF + logistic regression & 0.829 & 0.710 & -- & -- & -- & -- \\
 PhoBERT-base-v2, multi-task & \textbf{0.890} & \textbf{0.815} & 0.856 & 0.870 & 0.829 & 0.771 \\
 \bottomrule
 \end{tabular}

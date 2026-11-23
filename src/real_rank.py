@@ -15,7 +15,7 @@ from scipy.stats import kendalltau, spearmanr
 
 sys.path.insert(0, str(Path(__file__).parent))
 from edr import EDR, select_gamma  # noqa: E402
-from baselines import bootstrap_ci, bradley_terry, build_matrix, prank, sentiment_prior  # noqa: E402
+from baselines import bootstrap_ci, bradley_terry, build_matrix, hits, pagerank, prank, sentiment_prior  # noqa: E402
 import spec_proxies as SP  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -79,6 +79,7 @@ def main(min_reviews=10):
     for a in ASPECTS:
         nodes, W = build_matrix(ent, a, keys)
         res = {"sentiment": dict(zip(nodes, sentiment_prior(nodes, a, senti))),
+               "PageRank": pagerank(nodes, W), "HITS": hits(nodes, W),
                "Bradley-Terry": bradley_terry(nodes, W),
                "pRank": prank(nodes, W, a, senti)}
         res["EDR"] = edr_model.quality(a)

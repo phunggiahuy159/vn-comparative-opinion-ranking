@@ -4,9 +4,25 @@
     "test": 2224,
     "dev": 1112
   },
-  "aspect_detection_microF1": 0.828816371681416,
-  "aspect_detection_macroF1": 0.7923631061467172,
-  "aspect_polarity_microF1": 0.7100387168141593,
-  "aspect_polarity_macroF1": 0.501852993521005,
-  "comments_with_comparative_cue": 0.23493975903614459
+  "comments_with_comparative_cue": 0.23493975903614459,
+  "models": {
+    "logreg": {
+      "aspect_detection_microF1": 0.828816371681416,
+      "aspect_detection_macroF1": 0.7923631061467172,
+      "aspect_polarity_microF1": 0.7100387168141593,
+      "aspect_polarity_macroF1": 0.501852993521005
+    },
+    "linear_svm": {
+      "aspect_detection_microF1": 0.8224205640842556,
+      "aspect_detection_macroF1": 0.7767871729396645,
+      "aspect_polarity_microF1": 0.7133166726169226,
+      "aspect_polarity_macroF1": 0.4852510826544056
+    },
+    "multinomial_nb": {
+      "aspect_detection_microF1": 0.7093619846683166,
+      "aspect_detection_macroF1": 0.6277978324504917,
+      "aspect_polarity_microF1": 0.6002293716424216,
+      "aspect_polarity_macroF1": 0.3836911430430789
+    }
+  }
 }

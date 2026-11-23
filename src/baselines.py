@@ -82,6 +82,24 @@ def pagerank(nodes, W, d=0.85, teleport=None, iters=200, tol=1e-10):
     return dict(zip(nodes, r))
 
 
+def hits(nodes, W, iters=200, tol=1e-10):
+    """HITS (Kleinberg 1999) on the comparison graph, links loser -> winner (A[loser, winner] = W[winner, loser]).
+    Authority = phone that loses to no one and is preferred over phones that are themselves good hubs; returns authority."""
+    A = W.T
+    n = len(nodes)
+    a, h = np.ones(n) / np.sqrt(n), np.ones(n) / np.sqrt(n)
+    for _ in range(iters):
+        a_new = A.T @ h
+        h_new = A @ a_new
+        a_new /= np.linalg.norm(a_new) or 1.0
+        h_new /= np.linalg.norm(h_new) or 1.0
+        done = np.abs(a_new - a).sum() + np.abs(h_new - h).sum() < tol
+        a, h = a_new, h_new
+        if done:
+            break
+    return dict(zip(nodes, a))
+
+
 def degree_normalized(scores: dict, nodes, W, eps=1.0):
     """Divide a stationary score by #comparisons the product took part in (removes popularity bias)."""
     deg = W.sum(0) + W.sum(1)

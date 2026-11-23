@@ -33,6 +33,20 @@
           0.459
         ]
       },
+      "PageRank": {
+        "spearman": NaN,
+        "ci95": [
+          NaN,
+          NaN
+        ]
+      },
+      "HITS": {
+        "spearman": NaN,
+        "ci95": [
+          NaN,
+          NaN
+        ]
+      },
       "Bradley-Terry": {
         "spearman": NaN,
         "ci95": [
@@ -95,6 +109,20 @@
         "ci95": [
           -0.045,
           0.483
+        ]
+      },
+      "PageRank": {
+        "spearman": NaN,
+        "ci95": [
+          NaN,
+          NaN
+        ]
+      },
+      "HITS": {
+        "spearman": NaN,
+        "ci95": [
+          NaN,
+          NaN
         ]
       },
       "Bradley-Terry": {
@@ -184,6 +212,20 @@
         "ci95": [
           0.402,
           0.833
+        ]
+      },
+      "PageRank": {
+        "spearman": NaN,
+        "ci95": [
+          NaN,
+          NaN
+        ]
+      },
+      "HITS": {
+        "spearman": NaN,
+        "ci95": [
+          NaN,
+          NaN
         ]
       },
       "Bradley-Terry": {
