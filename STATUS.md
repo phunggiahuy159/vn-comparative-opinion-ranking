@@ -24,9 +24,9 @@ per aspect → validate against benchmarks (GSMArena / DXOMARK / AnTuTu). The co
 | Aspect importance (real, ViSFD n = 11,122) | R² .615; negatives cost 1.5–2.7× more stars than positives add (DESIGN is the exception) | `results/aspect_importance.txt` |
 | thegioididong crawl (2023–26 phones) | 279 pages → ~1.5k reviews, ~95 models, only ~22 with ≥ 20 reviews | `data/` (git-ignored) |
 | Real pipeline end to end (CPU) | 21 linked comparisons: 9 vs the reviewer's *old* phone, 8 vs a *brand*, 1 head-to-head | `results/real_pipeline_stats.json` |
-| Progress report (LaTeX, 3 pages, Group 20) | compiled; describes the current EDR (hedonic prior, γ by held-out CV), E1 table, break-even figure; no week labels | `report/progress_report.tex` → `report/Group20_ProgressReport.pdf` |
-| Final report draft | same style; TODO badges mark the real-data results still missing | `report/final_report.tex` |
-| Shared report style | header/footer, title block, status badges, highlight rows, key-finding box; palette matches the figures | `report/g20style.sty` |
+| Progress report (LaTeX, 3 pages, Group 20) | compiled; ICLR format; describes the current EDR (hedonic prior, γ by held-out CV), 20-seed E1 table, break-even figure; no week labels | `report/progress_report.tex` → `report/Group20_ProgressReport.pdf` |
+| Final report draft | ICLR format; **[TODO: …]** marks the real-data results still missing | `report/final_report.tex` |
+| Report format | official ICLR 2027 template (black-and-white layout, colour figures, dark-blue links); Times via TeX Gyre Termes for Vietnamese | `report/iclr2027_conference.sty` |
 | **EDR final** (hedonic prior + disconfirmation + γ chosen by held-out comparisons + Laplace) | E1 (20 seeds, ε = .1): EDR .855 / .833 / .818 at γ = 0 / .5 / .8 vs pRank .841 / .778 / .664, price .634; ablations all lower; ECE .080. E2 break-even, E3 sparsity, calibration figures | `src/edr.py`, `experiments/synthetic.py` → `results/synthetic/summary.txt`, `figures/` |
 | Real-data EDR run (prices for 99/102 phones) | 90% rank intervals are wide for most phones (e.g. (1,3,16)), tight only for well-reviewed ones (Moto G86 battery 4–9; iPhone 17 Pro Max perf 1–10). Hedonic log-price slope: battery −0.08 (budget phones have big batteries), camera +0.11, perf +0.10, screen +0.08. γ is WEAK (0 entity-level comparisons) | `src/real_rank.py`, `results/real_eval.json` |
 | Expert-comparison path (VnExpress, title = implicit subject) | code ready; rules give few, noisy comparisons → needs the LLM | `src/pipeline_real.py::comparisons_articles` |

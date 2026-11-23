@@ -99,8 +99,11 @@ def agg(runs, key):
 
 
 # ---------------------------------------------------------------------------------------------- plotting
-COL = {"EDR (ours)": "#2a78d6", "pRank [Zhang 2010]": "#eb6834", "BT + sentiment": "#1baf7a", "price only": "#8a8984"}
-INK, INK2, GRID = "#0b0b0b", "#52514e", "#e4e3df"
+# Colour per method (validated categorical palette) plus distinct markers/line styles, so it still reads in greyscale.
+STY = {"EDR (ours)":         dict(color="#2a78d6", ls="-",  marker="o", lw=1.7, mfc="#2a78d6"),
+       "BT + sentiment":     dict(color="#1baf7a", ls="--", marker="s", lw=1.3, mfc="white"),
+       "pRank [Zhang 2010]": dict(color="#eb6834", ls=":",  marker="^", lw=1.5, mfc="white"),
+       "price only":         dict(color="#8a8984", ls="-.", marker=None, lw=1.1, mfc="white")}
 
 
 def _style():
@@ -108,48 +111,63 @@ def _style():
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     plt.rcParams.update({"font.family": "serif", "font.serif": ["Times New Roman", "STIXGeneral"], "font.size": 9,
-                         "axes.edgecolor": INK2, "axes.labelcolor": INK, "xtick.color": INK2, "ytick.color": INK2,
-                         "axes.grid": True, "grid.color": GRID, "grid.linewidth": 0.6, "axes.spines.top": False,
+                         "mathtext.fontset": "stix", "axes.edgecolor": "#52514e", "axes.linewidth": 0.6,
+                         "axes.grid": True, "grid.color": "#e4e3df", "grid.linewidth": 0.5, "axes.spines.top": False,
                          "axes.spines.right": False, "legend.frameon": False, "savefig.bbox": "tight"})
     return plt
 
 
-def line_figure(x, series, xlabel, fname, title, ylim=(0.2, 0.9)):
+def line_figure(x, series, xlabel, fname, ylim=(0.2, 0.9)):
     plt = _style()
-    fig, ax = plt.subplots(figsize=(3.3, 2.35))
+    fig, ax = plt.subplots(figsize=(3.2, 2.2))
     for name, (mu, sd) in series.items():
-        mu, sd = np.array(mu), np.array(sd)
-        dashed = name == "price only"
-        ax.plot(x, mu, color=COL[name], lw=1.6 if not dashed else 1.2, ls="--" if dashed else "-",
-                marker=None if dashed else "o", ms=3.5, label=name, zorder=3)
-        if not dashed:
-            ax.fill_between(x, mu - sd / np.sqrt(10), mu + sd / np.sqrt(10), color=COL[name], alpha=0.12, lw=0)
-    ax.set_xlabel(xlabel); ax.set_ylabel("Spearman ρ vs. true quality"); ax.set_ylim(*ylim)
-    ax.set_title(title, fontsize=9, color=INK, loc="left")
-    ax.legend(fontsize=7.5, loc="lower left" if "ε" in xlabel else "lower right", handlelength=1.6)
+        mu, sd = np.array(mu), np.array(sd); st = STY[name]
+        ax.plot(x, mu, color=st["color"], ls=st["ls"], lw=st["lw"], marker=st["marker"], ms=4, mfc=st["mfc"],
+                mec=st["color"], mew=0.9, label=name, zorder=3)
+        if st["marker"]:
+            ax.fill_between(x, mu - sd / np.sqrt(10), mu + sd / np.sqrt(10), color=st["color"], alpha=0.12, lw=0)
+    ax.set_xlabel(xlabel); ax.set_ylabel(r"Spearman $\rho$ vs. true quality"); ax.set_ylim(*ylim)
+    ax.legend(fontsize=7.5, loc="lower left" if "ε" in xlabel or "varepsilon" in xlabel else "lower right", handlelength=2.4)
     for ext in ("pdf", "png"):
         fig.savefig(FIG / f"{fname}.{ext}", dpi=220)
     plt.close(fig)
 
 
-def calibration_figure(pr, lab, fname):
-    plt = _style()
+def calibration_bins(pr, lab):
     pr, lab = np.array(pr), np.array(lab)
     bins = np.linspace(0, 1, 11); idx = np.clip(np.digitize(pr, bins) - 1, 0, 9)
-    xs = [pr[idx == k].mean() for k in range(10) if (idx == k).sum() > 20]
-    ys = [lab[idx == k].mean() for k in range(10) if (idx == k).sum() > 20]
-    fig, ax = plt.subplots(figsize=(2.4, 2.35))
-    ax.plot([0, 1], [0, 1], ls="--", color=COL["price only"], lw=1)
-    ax.plot(xs, ys, color=COL["EDR (ours)"], lw=1.6, marker="o", ms=3.5)
-    ax.set_xlabel("EDR predicted P(A better than B)"); ax.set_ylabel("observed frequency")
-    ax.set_title("Calibration (γ = 0.8 world)", fontsize=9, color=INK, loc="left")
+    keep = [k for k in range(10) if (idx == k).sum() > 20]
+    return [float(pr[idx == k].mean()) for k in keep], [float(lab[idx == k].mean()) for k in keep]
+
+
+def calibration_figure(xs, ys, fname):
+    plt = _style()
+    fig, ax = plt.subplots(figsize=(2.3, 2.2))
+    ax.plot([0, 1], [0, 1], ls="--", color="#8a8984", lw=0.9, label="perfect")
+    ax.plot(xs, ys, color="#2a78d6", lw=1.6, marker="o", ms=3.5, label="EDR")
+    ax.set_xlabel(r"predicted $P(A \succ B)$"); ax.set_ylabel("observed frequency")
+    ax.legend(fontsize=7.5, loc="upper left")
     for ext in ("pdf", "png"):
         fig.savefig(FIG / f"{fname}.{ext}", dpi=220)
     plt.close(fig)
+
+
+def redraw():
+    """Redraw all figures from saved JSON (no simulation)."""
+    e2 = json.loads((OUT / "e2_breakeven.json").read_text()); e3 = json.loads((OUT / "e3_sparsity.json").read_text())
+    line_figure(e2["eps"], e2["series"], "comparison-extraction error rate ε", "breakeven")
+    line_figure(e3["m"], e3["series"], "comparisons per aspect", "sparsity")
+    e1 = json.loads((OUT / "e1_main.json").read_text())
+    if "calibration_bins" in e1:
+        calibration_figure(*e1["calibration_bins"], "calibration")
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--quick", action="store_true"); args = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--quick", action="store_true")
+    ap.add_argument("--plots", action="store_true", help="only redraw figures from results/synthetic/*.json")
+    args = ap.parse_args()
+    if args.plots:
+        return redraw()
     S1, S2 = (4, 3) if args.quick else (20, 10)
     OUT.mkdir(parents=True, exist_ok=True); FIG.mkdir(exist_ok=True)
 
@@ -166,8 +184,10 @@ def main():
     pr, lab = np.array(calib[0]), np.array(calib[1])
     bins = np.clip((pr * 10).astype(int), 0, 9)
     ece = float(sum(abs(pr[bins == k].mean() - lab[bins == k].mean()) * (bins == k).mean() for k in range(10) if (bins == k).any()))
-    (OUT / "e1_main.json").write_text(json.dumps({"spearman": {str(k): v for k, v in e1.items()}, "ece_gamma0.8": ece}, indent=1))
-    calibration_figure(pr, lab, "calibration")
+    cb = calibration_bins(pr, lab)
+    (OUT / "e1_main.json").write_text(json.dumps({"spearman": {str(k): v for k, v in e1.items()}, "ece_gamma0.8": ece,
+                                                  "calibration_bins": cb}, indent=1))
+    calibration_figure(*cb, "calibration")
 
     # E2 -------------------------------------------------------------------------------------------
     eps_grid = [0.0, 0.1, 0.2, 0.3, 0.4]
@@ -175,14 +195,14 @@ def main():
     show = ["EDR (ours)", "BT + sentiment", "pRank [Zhang 2010]", "price only"]
     ser2 = {k: ([agg(e2[e], k)[0] for e in eps_grid], [agg(e2[e], k)[1] for e in eps_grid]) for k in show}
     (OUT / "e2_breakeven.json").write_text(json.dumps({"eps": eps_grid, "series": ser2}, indent=1))
-    line_figure(eps_grid, ser2, "comparison-extraction error rate ε", "breakeven", "Break-even: extraction quality")
+    line_figure(eps_grid, ser2, "comparison-extraction error rate ε", "breakeven")
 
     # E3 -------------------------------------------------------------------------------------------
     m_grid = [50, 100, 200, 400]
     e3 = {m: [evaluate_world(world(s, gamma=0.8, m=m)) for s in range(S2)] for m in m_grid}
     ser3 = {k: ([agg(e3[m], k)[0] for m in m_grid], [agg(e3[m], k)[1] for m in m_grid]) for k in show}
     (OUT / "e3_sparsity.json").write_text(json.dumps({"m": m_grid, "series": ser3}, indent=1))
-    line_figure(m_grid, ser3, "comparisons per aspect", "sparsity", "Data volume")
+    line_figure(m_grid, ser3, "comparisons per aspect", "sparsity")
 
     # text summary -----------------------------------------------------------------------------------
     names = list(e1[0.8].keys())
