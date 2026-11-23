@@ -253,3 +253,31 @@ Options: add another store (CellphoneS / FPT Shop; needs the team's OK), and poo
 
 **Team tasks:** fill [data/benchmarks_template.csv](data/benchmarks_template.csv) (GSMArena battery hours, DXOMARK camera/display,
 AnTuTu) for the top-reviewed phones; request VCOM from VLSP organisers.
+
+## 12. EDR — final form (23/11 night) — [src/edr.py](src/edr.py), study: [src/study_edr_v2.py](src/study_edr_v2.py) → [results/study_edr_v2.txt](results/study_edr_v2.txt)
+
+Three ideas, every parameter interpretable:
+1. **Hedonic expectation** ê_{p,a} = x_p·c_a, where x = (z log-price, brand). It is also an empirical-Bayes prior θ_{p,a} ~ N(μ_p + ê_{p,a}, τ²):
+   phones with little evidence shrink toward what their price/brand predicts.
+2. **Disconfirmation** (Oliver 1980): sentiment P(+) = σ(α_a(θ_{p,a} − γ_a ê_{p,a}) + b_a). γ ∈ [0,1] is the *price-relativity index*.
+   Comparisons: noise-aware Bradley–Terry with a measured per-source flip rate ε_s; brand-only mentions are set comparisons.
+3. **Comparisons referee the sentiment model.** γ is only weakly identified when learned jointly (γ̂ ≈ 0.64–0.68 even when the truth is 0!).
+   Head-to-head comparisons are not price-relative, so γ is chosen by **K-fold held-out comparison log-likelihood**
+   (`select_gamma`). Chosen γ tracks the truth: 0.17 / 0.47 / 0.61 for true 0 / 0.5 / 0.8.
+4. **Laplace posterior** over θ → calibrated P(A ≻ B) (ECE 0.06–0.10) and credible rank intervals.
+
+Spearman ρ vs true quality, 20 seeds per world:
+
+| World | price | sentiment | pRank | BT+sent | EDR v1 | **EDR final** | γ=0 ablation | −hedonic prior |
+|---|---|---|---|---|---|---|---|---|
+| strongly price-relative (γ=.8) | .634 | .692 | .700 | .679 | .805 | **.832** | .700 | .820 |
+| moderately price-relative (γ=.5) | .634 | .790 | .798 | .725 | .813 | **.837** | .808 | .822 |
+| absolute (γ=0): no-harm check | .634 | .838 | .841 | .746 | .812 | **.855** | .856 | .829 |
+| sparse (100 comps, γ=.8) | .634 | .691 | .694 | .624 | .757 | **.797** | .661 | .787 |
+
+Dropped after testing (Occam): loss aversion κ in the ranking model (no ranking gain; κ only partly recoverable from counts,
+so it stays as a *descriptive* finding from the star regression); the value-for-money output (the raw sentiment ratio is a
+better value-for-money signal → insight: **buyer sentiment answers "best value?", benchmarks answer "best?"**).
+
+Real-data note: rules on expert (VnExpress) text are too crude (e.g. "giá cao hơn" = more expensive ≠ better; weight compared
+under PERFORMANCE). Expert comparisons need the LLM extractor, which is exactly what the break-even analysis says matters.

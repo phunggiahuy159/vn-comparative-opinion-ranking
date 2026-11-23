@@ -1,0 +1,64 @@
+
+=== EDT world (γ=0.8, κ=2), 300 comps/aspect — Spearman ρ vs true quality (20 seeds) ===
+  price only                     0.634 ± 0.08
+  sentiment only                 0.692 ± 0.09
+  pRank [Zhang 2010]             0.700 ± 0.09
+  BT + sentiment                 0.679 ± 0.06
+  EDR v1                         0.805 ± 0.05
+  EDR (final: γ by held-out comps) 0.832 ± 0.06
+    γ learned jointly            0.820 ± 0.06
+    γ = 0 (no price-relativity)  0.700 ± 0.09
+    + loss aversion (γ by CV)    0.831 ± 0.06
+    − hedonic prior (γ by CV)    0.820 ± 0.06
+  γ chosen by held-out comparisons = 0.61 ± 0.15   (true 0.8)
+  recovered κ̂ = 1.59 ± 0.25   (true 2.0)
+  value-for-money ρ: EDR 0.583  vs sentiment ratio 0.808
+  P(A≻B) calibration: Brier 0.123, ECE 0.085
+
+=== Absolute world (γ=0, κ=1): does EDR do harm? — Spearman ρ vs true quality (20 seeds) ===
+  price only                     0.634 ± 0.08
+  sentiment only                 0.838 ± 0.05
+  pRank [Zhang 2010]             0.841 ± 0.05
+  BT + sentiment                 0.746 ± 0.05
+  EDR v1                         0.812 ± 0.06
+  EDR (final: γ by held-out comps) 0.855 ± 0.05
+    γ learned jointly            0.809 ± 0.07
+    γ = 0 (no price-relativity)  0.856 ± 0.05
+    + loss aversion (γ by CV)    0.855 ± 0.05
+    − hedonic prior (γ by CV)    0.829 ± 0.06
+  γ chosen by held-out comparisons = 0.17 ± 0.18   (true 0.0)
+  recovered κ̂ = 1.14 ± 0.25   (true 1.0)
+  value-for-money ρ: EDR 0.645  vs sentiment ratio 0.587
+  P(A≻B) calibration: Brier 0.109, ECE 0.062
+
+=== Moderate EDT world (γ=0.5, κ=2), 300 comps/aspect — Spearman ρ vs true quality (20 seeds) ===
+  price only                     0.634 ± 0.08
+  sentiment only                 0.790 ± 0.07
+  pRank [Zhang 2010]             0.798 ± 0.07
+  BT + sentiment                 0.725 ± 0.05
+  EDR v1                         0.813 ± 0.07
+  EDR (final: γ by held-out comps) 0.837 ± 0.07
+    γ learned jointly            0.814 ± 0.08
+    γ = 0 (no price-relativity)  0.808 ± 0.07
+    + loss aversion (γ by CV)    0.838 ± 0.07
+    − hedonic prior (γ by CV)    0.822 ± 0.07
+  γ chosen by held-out comparisons = 0.47 ± 0.16   (true 0.5)
+  recovered κ̂ = 1.50 ± 0.23   (true 2.0)
+  value-for-money ρ: EDR 0.623  vs sentiment ratio 0.730
+  P(A≻B) calibration: Brier 0.116, ECE 0.078
+
+=== Sparse EDT world (γ=0.8, κ=2), 100 comps/aspect — Spearman ρ vs true quality (20 seeds) ===
+  price only                     0.634 ± 0.08
+  sentiment only                 0.691 ± 0.11
+  pRank [Zhang 2010]             0.694 ± 0.11
+  BT + sentiment                 0.624 ± 0.09
+  EDR v1                         0.757 ± 0.08
+  EDR (final: γ by held-out comps) 0.797 ± 0.07
+    γ learned jointly            0.782 ± 0.07
+    γ = 0 (no price-relativity)  0.661 ± 0.13
+    + loss aversion (γ by CV)    0.796 ± 0.08
+    − hedonic prior (γ by CV)    0.787 ± 0.07
+  γ chosen by held-out comparisons = 0.62 ± 0.20   (true 0.8)
+  recovered κ̂ = 1.56 ± 0.18   (true 2.0)
+  value-for-money ρ: EDR 0.613  vs sentiment ratio 0.782
+  P(A≻B) calibration: Brier 0.141, ECE 0.095

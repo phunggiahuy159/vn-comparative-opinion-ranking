@@ -105,6 +105,39 @@ def comparisons_rules(reviews, cat):
     return comps, raw, unresolved
 
 
+def link_title(cat, title):
+    """Implicit subject of an expert article = first product mention in its title that links to something."""
+    from compare_rules import MODEL
+    for m in re.finditer(MODEL, (title or "").lower()):
+        e = cat.link(m.group(0))
+        if e:
+            return e
+    return None
+
+
+def comparisons_articles(articles, cat):
+    """Expert comparisons from VnExpress articles (rules for now; swap in LLM tuples when available).
+    Subject THIS → the title's product; clauses are de-duplicated per article; source='expert'."""
+    comps, seen = [], set()
+    for a in articles:
+        this = link_title(cat, a["title"])
+        for t in rule_extract(a["text"]):
+            if t["label"].startswith("SUP") or not t["object"]:
+                continue
+            key = (a["url"], t["clause"], t["object"])
+            if key in seen:
+                continue
+            seen.add(key)
+            subj = this if t["subject"] == "THIS" else cat.link(t["subject"])
+            obj = cat.link(t["object"])
+            if not subj or not obj or subj == obj:
+                continue
+            w, l = (subj, obj) if t["label"] in ("COM+", "EQL") else (obj, subj)
+            comps.append({"winner": w, "loser": l, "aspect": t["aspect"], "conf": 1.0, "source": "expert",
+                          "type": "equal" if t["label"] == "EQL" else "better", "evidence": t["clause"][:200], "url": a["url"]})
+    return comps
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--extractor", default="rules")

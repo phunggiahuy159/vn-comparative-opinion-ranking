@@ -1,6 +1,6 @@
 # STATUS / HANDOFF — read this first
 
-Last updated: **23/11/2026, ~19:40 (UTC+7)**. This is the single source of truth for "where are we, what is blocked,
+Last updated: **23/11/2026, ~21:00 (UTC+7)**. This is the single source of truth for "where are we, what is blocked,
 what's next". Details and rationale are in [PLAN.md](PLAN.md). The proposal is fixed: the instructor requires consistency between
 proposal, progress report and final report.
 
@@ -26,11 +26,14 @@ per aspect → validate against benchmarks (GSMArena / DXOMARK / AnTuTu). The co
 | Aspect importance (real, ViSFD n = 11,122) | R² .615; negatives cost 1.5–2.7× more stars than positives add (DESIGN is the exception) | `results/aspect_importance.txt` |
 | thegioididong crawl (2023–26 phones) | 279 pages → ~1.5k reviews, ~95 models, only ~22 with ≥ 20 reviews | `data/` (git-ignored) |
 | Real pipeline end to end (CPU) | 21 linked comparisons: 9 vs the reviewer's *old* phone, 8 vs a *brand*, 1 head-to-head | `results/real_pipeline_stats.json` |
-| Progress report (LaTeX, 3 pages, Group 20) | compiled | `report/` |
+| Progress report (LaTeX, 3 pages, Group 20) | compiled; describes EDR v1 | `report/` |
+| **EDR final** (hedonic prior + disconfirmation + γ chosen by held-out comparisons + Laplace) | best or tied-best in all 4 synthetic worlds (e.g. .832 vs pRank .700); no harm when reviewers judge absolutely (.855 vs oracle .856) | `src/edr.py`, `results/study_edr_v2.txt`, PLAN §12 |
+| Expert-comparison path (VnExpress, title = implicit subject) | code ready; rules give few, noisy comparisons → needs the LLM | `src/pipeline_real.py::comparisons_articles` |
 
 ## 3. Running / waiting (as of the timestamp above)
 | What | State | How to check / resume |
 |---|---|---|
+| ⚠️ Kaggle CLI login **expired** (OAuth) — the owner must run `kaggle auth login` again | | |
 | Kaggle `phunggiahuy/vabsa-absa-suite` (9 ABSA runs: PhoBERT-large ×3, base ×3, XLM-R, no-seg ablation) | **QUEUED for hours** (Kaggle T4 shortage; CPU jobs run fine) | `kaggle kernels status phunggiahuy/vabsa-absa-suite`; fetch with `kaggle kernels output phunggiahuy/vabsa-absa-suite -p kaggle/out/suite` |
 | Kaggle `phunggiahuy/vabsa-llm-extract` (Qwen2.5-7B silver quintuples for 3,051 ViSFD candidates) | **QUEUED** | same commands |
 | VnExpress expert-article crawl | running (~500 phone article links found) | `logs/crawl_vnexpress.log`; resumable: `.venv/bin/python -u src/crawl_vnexpress.py` |
@@ -47,6 +50,7 @@ per aspect → validate against benchmarks (GSMArena / DXOMARK / AnTuTu). The co
 6. The repo https://github.com/phunggiahuy159/vn-comparative-opinion-ranking is **public** (since 23/11); the report links to it. Keep scraped data, checkpoints and slides out of git (see .gitignore).
 
 ## 5. Next steps (in order)
+0. Switch `src/real_rank.py` from `joint_model` (v1) to `edr.select_gamma` (final EDR). Real γ-selection needs entity-level comparisons, i.e. expert comparisons from the LLM.
 1. When prices finish: `python src/pipeline_real.py && python src/real_rank.py` (EDR then learns β_price per aspect).
 2. Run comparative extraction on the VnExpress sentences (rules now, LLM when a GPU is available), link them to the catalogue, and add
    them as **expert comparisons** to the graph. EDR fuses buyer sentiment (thegioididong) with expert comparisons (VnExpress).
