@@ -36,14 +36,14 @@
   \textnormal{\texttt{\href{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}{github.com/phunggiahuy159/vn-comparative-opinion-ranking}}}}
 % pipeline diagram, used by both reports
 \newcommand{\pipeline}{%
-\begin{tikzpicture}[node distance=0.22cm, every node/.style={font=\scriptsize},
-  box/.style={draw, align=center, minimum height=0.8cm, text width=1.6cm, inner sep=2pt},
+\begin{tikzpicture}[node distance=0.2cm, every node/.style={font=\scriptsize},
+  box/.style={draw, align=center, minimum height=0.85cm, text width=1.72cm, inner sep=2pt},
   arr/.style={-{Stealth[length=3.5pt]}, semithick}]
 \node[box] (a) {Crawl reviews\\+ articles};
-\node[box, right=of a] (b) {ABSA\\(PhoBERT)};
-\node[box, right=of b] (c) {Comparative\\quintuples};
-\node[box, right=of c] (d) {Entity\\linking};
-\node[box, right=of d, very thick] (e) {\textbf{EDR ranking}\\+ intervals};
+\node[box, right=of a] (b) {Aspect sentiment\\PhoBERT};
+\node[box, right=of b] (c) {Comparisons +\\entity linking};
+\node[box, right=of c] (d) {Per-aspect\\comparison graph};
+\node[box, right=of d, very thick] (e) {\textbf{Graph ranking}\\PageRank, pRank,\\\textbf{EDR}};
 \node[box, right=of e] (f) {Benchmark\\correlation};
 \foreach \x/\y in {a/b,b/c,c/d,d/e,e/f} \draw[arr] (\x) -- (\y);
 \end{tikzpicture}}

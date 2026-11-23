@@ -44,19 +44,28 @@ def absa():
 
 
 def synthetic():
+    """E1 table: mean ± sd over seeds; in each column the best mean (any row, ablations included) is bold."""
     e1 = load("synthetic/e1_main.json")["spearman"]
     G = ["0.0", "0.5", "0.8"]
     main = [("price only", "Price only"), ("sentiment only", "Sentiment only"), ("PageRank", "PageRank"), ("HITS", "HITS"),
-            ("pRank [Zhang 2010]", "pRank"), ("Bradley-Terry", "Bradley--Terry (BT)"), ("BT + sentiment", "BT + sentiment")]
+            ("pRank [Zhang 2010]", "pRank"), ("Bradley-Terry", "Bradley--Terry (BT)"), ("BT + sentiment", "BT + sentiment"),
+            ("EDR (ours)", "EDR (ours)")]
     abl = [("EDR: γ = 0", r"\quad $-$ $\gamma$ fixed at 0"), ("EDR: γ learned jointly", r"\quad $-$ $\gamma$ learned jointly"),
            ("EDR: no hedonic prior", r"\quad $-$ no hedonic prior")]
-    cell = lambda k, g, d=3: f(e1[g][k][0], d)
+    keys = [k for k, _ in main + abl if k in e1[G[0]]]
+    best = {g: max(e1[g][k][0] for k in keys) for g in G}
+
+    def cell(k, g):
+        m, sd = e1[g][k]
+        txt = f(m)
+        txt = rf"\textbf{{{txt}}}" if abs(m - best[g]) < 5e-4 else txt
+        return txt + rf"{{\scriptsize$\pm${f(sd, 2)}}}"
+
     rows = [r"\begin{tabular}{@{}lccc@{}}", r"\toprule", r"Ranker & $\gamma{=}0$ & $\gamma{=}0.5$ & $\gamma{=}0.8$ \\", r"\midrule"]
     rows += [f"{lab} & " + " & ".join(cell(k, g) for g in G) + r" \\" for k, lab in main if k in e1[G[0]]]
-    rows.append(r"\textbf{EDR (ours)} & " + " & ".join(rf"\textbf{{{cell('EDR (ours)', g)}}}" for g in G) + r" \\")
     rows.append(r"\midrule")
     rows += [f"{lab} & " + " & ".join(cell(k, g) for g in G) + r" \\" for k, lab in abl if k in e1[G[0]]]
-    rows.append(r"\quad selected $\gamma$ & " + " & ".join(cell("chosen γ", g, 2) for g in G) + r" \\")
+    rows.append(r"\quad selected $\gamma$ & " + " & ".join(f(e1[g]["chosen γ"][0], 2) + rf"{{\scriptsize$\pm${f(e1[g]['chosen γ'][1], 2)}}}" for g in G) + r" \\")
     rows += [r"\bottomrule", r"\end{tabular}"]
     return "\n".join(rows)
 
@@ -108,6 +117,13 @@ def numbers():
     for a, key in [("BATTERY", "RealPriceBattery"), ("CAMERA", "RealPriceCamera")]:
         m[key] = f(((ev.get(a) or {}).get("proxy") or {}).get("price only", {}).get("spearman"), 2)
     m["RealSentScreen"] = f(((ev.get("SCREEN") or {}).get("proxy") or {}).get("sentiment", {}).get("spearman"), 2)
+    for a, key in [("BATTERY", "RealPriceBatteryCI"), ("CAMERA", "RealPriceCameraCI")]:
+        lo, hi = ((ev.get(a) or {}).get("proxy") or {}).get("price only", {}).get("ci95", [None, None])
+        m[key] = f"[{f(lo, 2)}, {f(hi, 2)}]"
+    ek = st.get("edge_kinds", {})
+    m["NEdgesCatCat"] = str(ek.get("cat-cat", 0))
+    m["NEdgesOld"] = str(ek.get("cat-ext", 0) + ek.get("ext-cat", 0))
+    m["NEdgesBrand"] = str(sum(v for k, v in ek.items() if "group" in k))
     return "\n".join(rf"\newcommand{{\{k}}}{{{v}}}" for k, v in m.items())
 
 

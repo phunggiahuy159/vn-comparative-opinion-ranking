@@ -3,18 +3,18 @@
 \toprule
 Ranker & $\gamma{=}0$ & $\gamma{=}0.5$ & $\gamma{=}0.8$ \\
 \midrule
-Price only & 0.634 & 0.634 & 0.634 \\
-Sentiment only & 0.838 & 0.777 & 0.661 \\
-PageRank & 0.136 & 0.136 & 0.136 \\
-HITS & 0.103 & 0.103 & 0.103 \\
-pRank & 0.841 & 0.778 & 0.664 \\
-Bradley--Terry (BT) & 0.521 & 0.521 & 0.521 \\
-BT + sentiment & 0.746 & 0.725 & 0.677 \\
-\textbf{EDR (ours)} & \textbf{0.855} & \textbf{0.833} & \textbf{0.818} \\
+Price only & 0.634{\scriptsize$\pm$0.08} & 0.634{\scriptsize$\pm$0.08} & 0.634{\scriptsize$\pm$0.08} \\
+Sentiment only & 0.838{\scriptsize$\pm$0.05} & 0.777{\scriptsize$\pm$0.08} & 0.661{\scriptsize$\pm$0.11} \\
+PageRank & 0.136{\scriptsize$\pm$0.17} & 0.136{\scriptsize$\pm$0.17} & 0.136{\scriptsize$\pm$0.17} \\
+HITS & 0.103{\scriptsize$\pm$0.16} & 0.103{\scriptsize$\pm$0.16} & 0.103{\scriptsize$\pm$0.16} \\
+pRank & 0.841{\scriptsize$\pm$0.05} & 0.778{\scriptsize$\pm$0.08} & 0.664{\scriptsize$\pm$0.11} \\
+Bradley--Terry (BT) & 0.521{\scriptsize$\pm$0.07} & 0.521{\scriptsize$\pm$0.07} & 0.521{\scriptsize$\pm$0.07} \\
+BT + sentiment & 0.746{\scriptsize$\pm$0.05} & 0.725{\scriptsize$\pm$0.06} & 0.677{\scriptsize$\pm$0.07} \\
+EDR (ours) & 0.855{\scriptsize$\pm$0.05} & \textbf{0.833}{\scriptsize$\pm$0.07} & \textbf{0.818}{\scriptsize$\pm$0.06} \\
 \midrule
-\quad $-$ $\gamma$ fixed at 0 & 0.856 & 0.789 & 0.683 \\
-\quad $-$ $\gamma$ learned jointly & 0.809 & 0.810 & 0.808 \\
-\quad $-$ no hedonic prior & 0.829 & 0.811 & 0.808 \\
-\quad selected $\gamma$ & 0.17 & 0.47 & 0.60 \\
+\quad $-$ $\gamma$ fixed at 0 & \textbf{0.856}{\scriptsize$\pm$0.05} & 0.789{\scriptsize$\pm$0.09} & 0.683{\scriptsize$\pm$0.10} \\
+\quad $-$ $\gamma$ learned jointly & 0.809{\scriptsize$\pm$0.07} & 0.810{\scriptsize$\pm$0.07} & 0.808{\scriptsize$\pm$0.06} \\
+\quad $-$ no hedonic prior & 0.829{\scriptsize$\pm$0.06} & 0.811{\scriptsize$\pm$0.06} & 0.808{\scriptsize$\pm$0.06} \\
+\quad selected $\gamma$ & 0.17{\scriptsize$\pm$0.18} & 0.47{\scriptsize$\pm$0.13} & 0.60{\scriptsize$\pm$0.15} \\
 \bottomrule
 \end{tabular}

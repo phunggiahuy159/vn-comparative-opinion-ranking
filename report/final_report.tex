@@ -22,9 +22,9 @@ The prior approach ranks products by PageRank over a comparative-sentence graph 
 a joint model grounded in consumer-satisfaction theory. A latent quality explains both head-to-head comparisons (Bradley--Terry)
 and sentiment, where sentiment reflects quality relative to the expectation set by price and brand. The degree of price-relativity
 $\gamma$ is chosen by how well the model predicts held-out comparisons, and a Laplace posterior yields calibrated pairwise probabilities and rank intervals.
-In controlled simulations EDR is the best ranker in every setting (Spearman 0.82--0.86 vs.\ 0.66--0.84 for pRank) including when reviewers
-judge absolutely. A break-even analysis shows that EDR stays above ranking by price up to a 40\% extraction error, while a
-Bradley--Terry + sentiment combination falls below it at about 10\%. On real data we report two behavioural findings: negative aspect mentions cost 1.5--2.7$\times$ more stars
+In controlled simulations EDR ties with pRank when reviewers judge absolutely and is the best ranker when sentiment is price-relative
+(Spearman 0.82 vs.\ 0.66 for pRank). A break-even analysis shows that EDR stays clearly above ranking by price up to a 30\% extraction
+error, while a Bradley--Terry + sentiment combination falls to the price baseline at about 10\%. On real data we report two behavioural findings: negative aspect mentions cost 1.5--2.7$\times$ more stars
 than positive ones add (loss aversion), and buyers compare against their previous phone or a brand rather than against competitors.
 \todo{one sentence on real benchmark / spec-proxy results}
 \end{abstract}
@@ -38,9 +38,9 @@ A ranking that averages sentiment therefore answers ``which phone pleased its bu
 
 \paragraph{Contributions.}
 (1)~A Vietnamese pipeline for aspect sentiment, comparative quintuples and product-mention linking, including implicit subjects.
-(2)~An analysis of graph-based comparative ranking: PageRank measures popularity, and pRank \citep{zhang2010} reduces to sentiment ranking
-and fails under price-relative sentiment.
-(3)~EDR, a theory-grounded joint model with interpretable parameters (hedonic price curve, price-relativity $\gamma$), where held-out comparisons select
+(2)~An analysis of when graph rankers on the comparison graph reflect quality: PageRank and HITS mostly measure popularity, and pRank
+\citep{zhang2010} tracks sentiment and degrades under price-relative sentiment.
+(3)~EDR, which extends ranking on the same comparison graph: a theory-grounded joint model with interpretable parameters (hedonic price curve, price-relativity $\gamma$), where held-out comparisons select
 the price-relativity, and with calibrated uncertainty.
 (4)~A break-even analysis that links extraction accuracy (an NLP metric) to ranking quality (the end goal).
 (5)~Behavioural findings on Vietnamese buyers.
@@ -52,9 +52,11 @@ Pre-trained encoders such as PhoBERT \citep{phobert} are the standard backbone.
 \paragraph{Comparative opinion mining} extracts relations $\langle$entity$_1$, entity$_2$, aspect, predicate, type$\rangle$ \citep{jindal2006}.
 For Vietnamese, the VLSP~2023 ComOM shared task \citep{vcom} defines quintuples with 8 comparison labels.
 \paragraph{Ranking from opinions.} \citet{zhang2010} build a per-feature graph from comparative sentences, weight nodes by the ratio of positive to negative
-subjective sentences, and rank with pRank, a PageRank variant \citep{pagerank}; HITS \citep{hits} is the other classic link-analysis ranker. Paired-comparison models \citep{bt1952} rank from noisy pairwise outcomes.
+subjective sentences, and rank with pRank, a PageRank variant \citep{pagerank}; HITS \citep{hits} is the other classic link-analysis ranker. Paired-comparison models \citep{bt1952} rank from noisy pairwise outcomes, and \citet{tkachenko2014} model comparison direction and
+entity ranking jointly in a generative model.
 \paragraph{Expectations.} Expectation--disconfirmation theory \citep{oliver1980} models satisfaction as performance relative to expectation.
-Prospect theory \citep{kt1979} adds loss aversion. To our knowledge these have not been used to de-bias opinion-based product rankings.
+Prospect theory \citep{kt1979} adds loss aversion. \citet{lihitt2010} show empirically that review ratings mix quality with value for money
+(price effects). We use these ideas to correct opinion-based product rankings, with comparisons used to estimate how price-relative the sentiment is.
 
 %==================================================================================================
 \section{Data}
@@ -115,7 +117,7 @@ Comparisons follow Bradley--Terry with Zipf-like popularity; 30\% of them name o
 \begin{subfigure}{0.49\textwidth}\includegraphics[width=\linewidth]{breakeven.pdf}\caption{Break-even ($\gamma=0.8$).}\end{subfigure}
 \begin{subfigure}{0.49\textwidth}\includegraphics[width=\linewidth]{sparsity.pdf}\caption{Data volume ($\gamma=0.8$, $\varepsilon=0.1$).}\end{subfigure}
 \begin{subfigure}{0.34\textwidth}\includegraphics[width=\linewidth]{calibration.pdf}\caption{Calibration.}\end{subfigure}
-\caption{Synthetic results (mean $\pm$ s.e.). EDR stays above ranking by price at every tested error rate (margin \MarginLow{} at $\varepsilon=0$, \MarginHigh{} at $0.4$). Bradley--Terry + sentiment
+\caption{Synthetic results (mean $\pm$ s.e.). EDR stays clearly above ranking by price up to $\varepsilon=0.3$ (margin \MarginLow{} at $\varepsilon=0$); at $0.4$ the margin (\MarginHigh{}) is within noise. Bradley--Terry + sentiment
 falls below price at $\varepsilon\approx0.1$, and pRank tracks sentiment. EDR's pairwise probabilities are roughly calibrated (ECE \ECE) but somewhat overconfident at the extremes.}
 \end{figure}
 
