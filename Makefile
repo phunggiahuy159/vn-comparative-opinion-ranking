@@ -27,5 +27,6 @@ real:                     ## real pipeline (needs data/ + PhoBERT checkpoint) â†
 	$(PY) src/pipeline_real.py
 	$(PY) src/real_rank.py
 
-report:                   ## LaTeX progress report (XeLaTeX via tectonic)
-	cd report && tectonic progress_report.tex
+report:                   ## LaTeX reports (XeLaTeX via tectonic; shared style report/g20style.sty)
+	cd report && tectonic progress_report.tex && cp progress_report.pdf Group20_ProgressReport.pdf
+	cd report && tectonic final_report.tex

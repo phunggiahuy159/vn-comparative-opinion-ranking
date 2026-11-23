@@ -11,7 +11,7 @@ sentiment. It corrects the popularity and price-relative-sentiment biases of Pag
 
 - **Current status, open items and next steps: [STATUS.md](STATUS.md)** ← start here
 - Full plan, design decisions, related work: [PLAN.md](PLAN.md)
-- Progress report (LaTeX): [report/progress_report.tex](report/progress_report.tex) → `report/Group20_ProgressReport.pdf`
+- Reports (LaTeX, shared style `report/g20style.sty`): [progress report](report/progress_report.tex) → `report/Group20_ProgressReport.pdf`; [final report draft](report/final_report.tex)
 
 ## Layout
 | Path | What |
@@ -35,6 +35,6 @@ uv venv --python 3.11 .venv
 uv pip install --python .venv/bin/python -r requirements.txt && .venv/bin/python -m playwright install chromium
 .venv/bin/python src/absa_baseline.py            # ~1 min, CPU
 make synthetic                                   # all synthetic experiments + figures (~12 min CPU)
-cd report && tectonic progress_report.tex        # build the report (XeLaTeX)
+make report                                      # build both LaTeX reports (XeLaTeX via tectonic)
 ```
 Crawled data and model checkpoints are not in git. Re-create them with the crawlers and `src/absa_transformer.py`.

@@ -1,36 +1,17 @@
 % IT4868E Web Mining — Capstone Final Report (draft)   Build: tectonic final_report.tex
 \documentclass[10pt,a4paper]{article}
-\usepackage[a4paper,top=1.8cm,bottom=1.8cm,left=1.9cm,right=1.9cm]{geometry}
-\usepackage{fontspec}
-\setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
-  ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
-\usepackage{amsmath,amssymb}
-\usepackage{unicode-math}
-\setmathfont{texgyretermes-math.otf}
-\usepackage{booktabs,tabularx,multirow,array}
-\usepackage[table]{xcolor}
-\usepackage{graphicx}
+\usepackage[a4paper,top=1.7cm,bottom=1.6cm,left=1.9cm,right=1.9cm,headsep=8pt,footskip=16pt]{geometry}
+\usepackage{g20style}
 \usepackage{subcaption}
-\usepackage{tikz}
-\usetikzlibrary{positioning,arrows.meta,fit}
-\usepackage{enumitem}
-\usepackage[hidelinks]{hyperref}
-\usepackage{caption}
-\setlist{nosep,leftmargin=1.2em}
-\captionsetup{font=small,skip=3pt}
-\newcommand{\todo}[1]{\colorbox{yellow!45}{\small TODO: #1}}
+\doctype{Final Report (draft)}
 \graphicspath{{../figures/}}
-
-\title{\textbf{Expectation--Disconfirmation Ranking:\\Mining Vietnamese Reviews to Rank Smartphones by Aspect}}
-\author{Group 20: Phùng Gia Huy (20235506), Vũ Hải An (20235468),\\ Chu Xuân Minh (20235527), Nguyễn Bình Anh (20235470)\\
-IT4868E Web Mining, Hanoi University of Science and Technology\\
-\small\url{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}}
-\date{\todo{final date}}
+\newcommand{\todo}[1]{\badge{runc}{TODO: #1}}
 
 \begin{document}
-\maketitle
+\reporttitle{Expectation--Disconfirmation Ranking: Mining Vietnamese Reviews to Rank Smartphones by Aspect}{Final report}{\todo{date}}
 
-\begin{abstract}
+\begin{keybox}
+\lead{Abstract.}
 We study how to turn Vietnamese smartphone reviews into per-aspect product rankings (battery, camera, performance, screen)
 that agree with objective benchmarks. Our pipeline extracts aspect-level sentiment with a multi-task PhoBERT model (0.815
 aspect\#polarity micro-F1 on UIT-ViSFD, against 0.710 for TF-IDF), extracts comparative opinions, and links product mentions to a catalogue.
@@ -39,12 +20,12 @@ The prior approach ranks products by PageRank over a comparative-sentence graph 
 a joint model grounded in consumer-satisfaction theory. A latent quality explains both head-to-head comparisons (Bradley--Terry)
 and sentiment, where sentiment reflects quality relative to the expectation set by price and brand. The degree of price-relativity
 $\gamma$ is chosen by how well the model predicts held-out comparisons, and a Laplace posterior yields calibrated pairwise probabilities and rank intervals.
-In controlled simulations EDR is the best ranker in every setting (Spearman 0.83--0.86 vs.\ 0.65--0.83 for pRank) and does no harm when reviewers
-judge absolutely. A break-even analysis shows that comparative mining improves on simply ranking by price only while the
-extraction error stays below roughly 30\%. On real data we report two behavioural findings: negative aspect mentions cost 1.5--2.7$\times$ more stars
+In controlled simulations EDR is the best ranker in every setting (Spearman 0.82--0.86 vs.\ 0.66--0.84 for pRank) and does no harm when reviewers
+judge absolutely. A break-even analysis shows that EDR stays above simply ranking by price up to a 40\% extraction error, while a naive
+Bradley--Terry + sentiment combination falls below it at about 10\%. On real data we report two behavioural findings: negative aspect mentions cost 1.5--2.7$\times$ more stars
 than positive ones add (loss aversion), and buyers compare against their previous phone or a brand rather than against competitors.
 \todo{one sentence on real benchmark / spec-proxy results}
-\end{abstract}
+\end{keybox}
 
 %==================================================================================================
 \section{Introduction}
@@ -53,7 +34,7 @@ Opinions target \emph{aspects} (\emph{``pin trâu nhưng camera chụp đêm ké
 (\emph{``pin trâu hơn con A50''}), and many are \emph{relative to expectations} (\emph{``ngon trong tầm giá''}: good \emph{for the price}).
 A ranking that averages sentiment therefore answers ``which phone pleased its buyers most for what they paid?'', not ``which phone is best?''.
 
-\textbf{Contributions.}
+\lead{Contributions.}
 (1)~A Vietnamese pipeline for aspect sentiment, comparative quintuples and product-mention linking, including implicit subjects.
 (2)~An analysis of graph-based comparative ranking: PageRank measures popularity, and pRank~\cite{zhang2010} reduces to sentiment ranking
 and fails under price-relative sentiment.
@@ -64,13 +45,13 @@ the sentiment model, and with calibrated uncertainty.
 
 %==================================================================================================
 \section{Related work}
-\textbf{Aspect-based sentiment analysis} for Vietnamese is benchmarked by UIT-ViSFD~\cite{visfd} (smartphone feedback, 10 aspects).
+\lead{Aspect-based sentiment analysis} for Vietnamese is benchmarked by UIT-ViSFD~\cite{visfd} (smartphone feedback, 10 aspects).
 Pre-trained encoders such as PhoBERT~\cite{phobert} are the standard backbone.
-\textbf{Comparative opinion mining} extracts relations $\langle$entity$_1$, entity$_2$, aspect, predicate, type$\rangle$~\cite{jindal2006}.
+\lead{Comparative opinion mining} extracts relations $\langle$entity$_1$, entity$_2$, aspect, predicate, type$\rangle$~\cite{jindal2006}.
 For Vietnamese, the VLSP~2023 ComOM shared task~\cite{vcom} defines quintuples with 8 comparison labels.
-\textbf{Ranking from opinions.} Zhang et al.~\cite{zhang2010} build a per-feature graph from comparative sentences, weight nodes by the ratio of positive to negative
+\lead{Ranking from opinions.} Zhang et al.~\cite{zhang2010} build a per-feature graph from comparative sentences, weight nodes by the ratio of positive to negative
 subjective sentences, and rank with pRank, a PageRank variant~\cite{pagerank}. Paired-comparison models~\cite{bt1952} rank from noisy pairwise outcomes.
-\textbf{Expectations.} Expectation--disconfirmation theory~\cite{oliver1980} models satisfaction as performance relative to expectation.
+\lead{Expectations.} Expectation--disconfirmation theory~\cite{oliver1980} models satisfaction as performance relative to expectation.
 Prospect theory~\cite{kt1979} adds loss aversion. To our knowledge these have not been used to de-bias opinion-based product rankings.
 
 %==================================================================================================
@@ -88,23 +69,21 @@ plus listed prices and spec sheets. robots.txt was respected (5\,s delay), and n
 \section{Method}
 \subsection{Pipeline}
 \begin{center}
-\begin{tikzpicture}[node distance=0.3cm, every node/.style={font=\footnotesize},
-  box/.style={draw, rounded corners=2pt, align=center, minimum height=0.9cm, text width=2.35cm, fill=gray!6},
-  arr/.style={-{Stealth[length=4pt]}, thick}]
-\node[box] (r) {Buyer reviews\\+ expert articles};
-\node[box, right=of r] (a) {Aspect sentiment\\(PhoBERT, multi-task)};
-\node[box, right=of a] (c) {Comparative quintuples\\(rules / LLM)};
-\node[box, right=of c] (e) {Entity linking\\(implicit subject, brands)};
-\node[box, right=of e] (m) {\textbf{EDR}\\ranking + intervals};
-\foreach \x/\y in {r/a,a/c,c/e,e/m} \draw[arr] (\x) -- (\y);
+\begin{tikzpicture}[node distance=0.3cm]
+\node[g20box, text width=2.6cm] (r) {Buyer reviews\\+ expert articles};
+\node[g20box, text width=2.6cm, right=of r] (a) {Aspect sentiment\\PhoBERT, multi-task};
+\node[g20box, text width=2.6cm, right=of a] (c) {Comparative quintuples\\rules / LLM};
+\node[g20box, text width=2.6cm, right=of c] (e) {Entity linking\\subject, brands};
+\node[g20ours, text width=2.6cm, right=of e] (m) {EDR ranking\\+ rank intervals};
+\foreach \x/\y in {r/a,a/c,c/e,e/m} \draw[g20arr] (\x) -- (\y);
 \end{tikzpicture}
 \end{center}
-\textbf{ABSA.} PhoBERT-base-v2 with a shared encoder ([CLS] + mean pooling) and one 4-way head per aspect (none / positive / negative / neutral),
+\lead{ABSA.} PhoBERT-base-v2 with a shared encoder ([CLS] + mean pooling) and one 4-way head per aspect (none / positive / negative / neutral),
 trained with a class-weighted loss. Word segmentation uses pyvi.
-\textbf{Comparative extraction.} The rule-based extractor follows the lecture's comparative-sentence patterns adapted to Vietnamese
+\lead{Comparative extraction.} The rule-based extractor follows the lecture's comparative-sentence patterns adapted to Vietnamese
 (\emph{hơn, không bằng, thua, ngang, nhất}), with predicate polarity that can reverse the direction (\emph{``nóng hơn''} $\Rightarrow$ worse).
 An LLM extractor (Qwen2.5-7B-Instruct, few-shot, JSON output, VCOM labels) produces silver labels for higher recall.
-\textbf{Entity linking.} Each mention is mapped to a catalogue product, a brand set (\emph{``ss''}, \emph{``hơn samsung''}), or an external phone outside the catalogue.
+\lead{Entity linking.} Each mention is mapped to a catalogue product, a brand set (\emph{``ss''}, \emph{``hơn samsung''}), or an external phone outside the catalogue.
 The implicit subject is the reviewed product, or the article's title product.
 
 \subsection{Expectation--Disconfirmation Ranking (EDR)}
@@ -117,10 +96,10 @@ P(\text{observe } S_w\succ S_l) &= (1-\varepsilon_s)\,\sigma(\bar\theta_{S_w}-\b
 \end{align}
 Here $\mathbf{x}_p$ holds the z-scored log price and brand indicators, $S$ is a product or a brand set ($\bar\theta$ is the set mean), and $\varepsilon_s$ is the
 direction-error rate of source $s$, measured on gold annotations. Sentiment counts enter through a binomial likelihood.
-\textbf{Interpretation.} $\gamma_a\in[0,1]$ is a \emph{price-relativity index}: $\gamma=0$ means absolute judgements, and $\gamma=1$ means ``good for the price''.
-\textbf{Comparisons referee the sentiment model.} Learned jointly, $\gamma$ is weakly identified (Section~\ref{sec:synthetic}).
+\lead{Interpretation.} $\gamma_a\in[0,1]$ is a \emph{price-relativity index}: $\gamma=0$ means absolute judgements, and $\gamma=1$ means ``good for the price''.
+\lead{Comparisons referee the sentiment model.} Learned jointly, $\gamma$ is weakly identified (Section~\ref{sec:synthetic}).
 Head-to-head comparisons are not price-relative, so we choose $\gamma$ from a grid by $K$-fold held-out comparison log-likelihood.
-\textbf{Inference.} We fit by MAP (L-BFGS). A Laplace approximation of the posterior over $\boldsymbol\theta$ gives $P(\theta_i>\theta_j)$ and credible rank intervals.
+\lead{Inference.} We fit by MAP (L-BFGS). A Laplace approximation of the posterior over $\boldsymbol\theta$ gives $P(\theta_i>\theta_j)$ and credible rank intervals.
 
 %==================================================================================================
 \section{Experiments}
@@ -129,33 +108,49 @@ Head-to-head comparisons are not price-relative, so we choose $\gamma$ from a gr
 \begin{tabular}{@{}lcc@{}}\toprule
 Model & Aspect detection micro-F1 & Aspect\#polarity micro-F1\\\midrule
 TF-IDF + logistic regression & 0.829 & 0.710\\
-PhoBERT-base-v2, multi-task & \textbf{0.890} & \textbf{0.815}\\
+\rowhl PhoBERT-base-v2, multi-task & \best{0.890} & \textbf{0.815}\\
 \todo{PhoBERT-large / XLM-R, 3 seeds (Kaggle)} & & \\\bottomrule
 \end{tabular}\end{center}
 
 \subsection{Controlled simulation}\label{sec:synthetic}
 The simulated world has 40 phones in 6 brands. True quality follows a hedonic market, and sentiment is price-relative with strength $\gamma$.
 Comparisons follow Bradley--Terry with Zipf-like popularity; 30\% of them name only a brand, and extraction flips their direction with rate $\varepsilon$.
-\todo{insert E1 table from results/synthetic/summary.txt}
+\begin{table}[h]\centering\footnotesize\setlength{\tabcolsep}{5pt}
+\caption{Spearman $\rho$ against true quality, mean over 20 seeds ($\varepsilon=0.1$, 300 comparisons per aspect). Columns: true price-relativity $\gamma$.}\label{tab:e1}
+\begin{tabular}{@{}lccc@{}}\toprule
+\sffamily Ranker & \sffamily $\gamma=0$ & \sffamily $\gamma=0.5$ & \sffamily $\gamma=0.8$ \\\midrule
+Price only & .634 & .634 & .634 \\
+Sentiment only & .838 & .777 & .661 \\
+PageRank & .136 & .136 & .136 \\
+pRank~\cite{zhang2010} & .841 & .778 & .664 \\
+Bradley--Terry & .521 & .521 & .521 \\
+Bradley--Terry + sentiment & .746 & .725 & .677 \\
+\rowhl \textbf{EDR (ours)} & \best{.855} & \best{.833} & \best{.818} \\
+\midrule
+\quad ablation: $\gamma=0$ fixed & .856 & .789 & .683 \\
+\quad ablation: $\gamma$ learned jointly & .809 & .810 & .808 \\
+\quad ablation: no hedonic prior & .829 & .811 & .808 \\
+\quad selected $\gamma$ (true value in header) & .18 & .48 & .60 \\
+\bottomrule\end{tabular}\end{table}
 
 \begin{figure}[h]
 \centering
 \begin{subfigure}{0.36\textwidth}\includegraphics[width=\linewidth]{breakeven.pdf}\caption{Break-even ($\gamma=0.8$).}\end{subfigure}
 \begin{subfigure}{0.36\textwidth}\includegraphics[width=\linewidth]{sparsity.pdf}\caption{Data volume ($\gamma=0.8$, $\varepsilon=0.1$).}\end{subfigure}
 \begin{subfigure}{0.26\textwidth}\includegraphics[width=\linewidth]{calibration.pdf}\caption{Calibration.}\end{subfigure}
-\caption{Synthetic results (mean $\pm$ s.e.). EDR stays above ranking by price until the extraction error is about 0.3--0.4. Bradley--Terry + sentiment
-falls below price at $\varepsilon\approx0.05$, and pRank tracks sentiment. EDR's pairwise probabilities are close to calibrated.}
+\caption{Synthetic results (mean $\pm$ s.e.). EDR stays above ranking by price at every tested error rate (margin .17 at $\varepsilon=0$, .04 at $0.4$). Bradley--Terry + sentiment
+falls below price at $\varepsilon\approx0.1$, and pRank tracks sentiment. EDR's pairwise probabilities are close to calibrated.}
 \end{figure}
 
 \subsection{Real data}
 \todo{spec-proxy and benchmark correlations per aspect with bootstrap CIs; learned $\gamma_a$ and hedonic slopes; rank-interval figure}
 
 \section{Findings about Vietnamese buyers}
-\textbf{Loss aversion.} Regressing star ratings on aspect polarity in ViSFD ($R^2=0.615$, $n=11{,}122$) shows that negative mentions cost
+\lead{Loss aversion.} Regressing star ratings on aspect polarity in ViSFD ($R^2=0.615$, $n=11{,}122$) shows that negative mentions cost
 1.5--2.7$\times$ more stars than positive mentions add (e.g.\ PERFORMANCE $+0.40/-0.61$). DESIGN is the exception ($+0.31/-0.17$).
-\textbf{Reference points.} In buyer reviews, comparisons target the reviewer's \emph{previous} phone or a \emph{brand}, and almost never a competing current
+\lead{Reference points.} In buyer reviews, comparisons target the reviewer's \emph{previous} phone or a \emph{brand}, and almost never a competing current
 model, so head-to-head evidence must come from expert text.
-\textbf{Two questions.} Buyer sentiment ranks \emph{value for money}, whereas benchmarks rank \emph{absolute quality}. EDR separates the two.
+\lead{Two questions.} Buyer sentiment ranks \emph{value for money}, whereas benchmarks rank \emph{absolute quality}. EDR separates the two.
 
 \section{Limitations and ethics}
 Simulations show mechanisms, not real-world accuracy. Spec proxies (mAh, nits) are imperfect stand-ins for lab tests.

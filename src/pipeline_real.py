@@ -39,13 +39,15 @@ def load_reviews():
 
 
 def load_prices():
-    p = ROOT / "data" / "tgdd_products.jsonl"
+    """slug → listed price; the spec-sheet crawl (newer, more pages) takes precedence over the price-only crawl."""
     prices = {}
-    if p.exists():
-        for l in open(p):
-            d = json.loads(l)
-            if d.get("price"):
-                prices.setdefault(d["slug"], d["price"])
+    for name in ("tgdd_products_specs.jsonl", "tgdd_products.jsonl"):
+        p = ROOT / "data" / name
+        if p.exists():
+            for l in open(p):
+                d = json.loads(l)
+                if d.get("price"):
+                    prices.setdefault(d["slug"], d["price"])
     return prices
 
 

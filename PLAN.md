@@ -281,3 +281,9 @@ better value-for-money signal → insight: **buyer sentiment answers "best value
 
 Real-data note: rules on expert (VnExpress) text are too crude (e.g. "giá cao hơn" = more expensive ≠ better; weight compared
 under PERFORMANCE). Expert comparisons need the LLM extractor, which is exactly what the break-even analysis says matters.
+
+### 12b. Full synthetic run (20 seeds, `experiments/synthetic.py`, 23/11)
+- E1 Spearman at γ = 0 / .5 / .8: EDR .855 / .833 / .818; pRank .841 / .778 / .664; BT+sent .746 / .725 / .677; price .634.
+  Ablations (γ = 0 fixed, γ joint, no hedonic prior) are all below EDR when γ > 0. Selected γ: .18 / .48 / .60 (shrunk toward 0). ECE .080.
+- E2 break-even (γ = .8): EDR above price at every ε ≤ 0.4 (.856 → .726 vs .686); BT+sent crosses price at ε ≈ 0.1.
+- E3 sparsity: EDR .757 at 50 comparisons/aspect → .845 at 400; above price throughout.
