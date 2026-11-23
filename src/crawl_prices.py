@@ -1,7 +1,7 @@
-"""Fetch product name, brand and listed price from each public product page's JSON-LD (schema.org Product).
+"""Fetch listed price and the full spec sheet (schema.org additionalProperty) from each public product page's JSON-LD.
 
 Plain page GET (like a search engine), 5 s between requests (robots.txt Crawl-delay), resumable.
-Input : data/tgdd_phone_urls*.txt     Output: data/tgdd_products.jsonl
+Input : data/tgdd_phone_urls*.txt     Output: data/tgdd_products_specs.jsonl
 """
 import json
 import re
@@ -13,6 +13,17 @@ import requests
 
 ROOT = Path(__file__).resolve().parent.parent
 UA = {"user-agent": "Mozilla/5.0 (academic crawler; HUST IT4868 course project; 1 req / 5 s)"}
+
+
+def parse_specs(html):
+    """All schema.org PropertyValue pairs on the page, e.g. {"Dung lượng pin": "5000 mAh", "Chip xử lý (CPU)": "..."}."""
+    specs = {}
+    for name, value in re.findall(r'"@type":"PropertyValue","name":"((?:[^"\\]|\\.)+)","value":"((?:[^"\\]|\\.)*)"', html):
+        try:
+            specs.setdefault(json.loads(f'"{name}"'), json.loads(f'"{value}"'))
+        except json.JSONDecodeError:
+            continue
+    return specs
 
 
 def parse(html):
@@ -35,11 +46,12 @@ def parse(html):
         m = re.search(r'"price":\s*"?([0-9]{6,})', html)
         if m:
             out["price"] = float(m.group(1))
+    out["specs"] = parse_specs(html)
     return out
 
 
 def main(files):
-    out_p = ROOT / "data" / "tgdd_products.jsonl"
+    out_p = ROOT / "data" / "tgdd_products_specs.jsonl"
     done = {json.loads(l)["url"] for l in open(out_p)} if out_p.exists() else set()
     urls = []
     for f in files:
@@ -50,6 +62,7 @@ def main(files):
             time.sleep(5)
             try:
                 r = requests.get(u, headers=UA, timeout=30)
+                r.encoding = "utf-8"
                 rec = {"url": u, "slug": u.rstrip("/").split("/")[-1], "status": r.status_code,
                        **(parse(r.text) if r.status_code == 200 else {})}
             except requests.RequestException as e:

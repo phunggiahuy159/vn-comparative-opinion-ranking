@@ -1,7 +1,17 @@
-datasets
+# core
+numpy
+scipy
 pandas
 scikit-learn
-scipy
-numpy
-# next stages
-# torch transformers pyvi networkx requests
+datasets
+torch
+transformers
+pyvi
+matplotlib
+# crawling
+requests
+playwright
+# pdf utilities
+pypdf
+pypdfium2
+pillow

@@ -1,4 +1,6 @@
-"""Aspect-specific product ranking from comparative opinions (course L05 link analysis + L06 opinion mining).
+"""Baseline rankers for comparative-opinion ranking (course L05 link analysis + L06 opinion mining).
+
+Our proposed model is in edr.py; everything here is a baseline or an evaluation helper.
 
 Input: comparison records (one per extracted quintuple, after entity linking):
     {"aspect": "BATTERY", "winner": "galaxy-a50", "loser": "oppo-f11", "type": "better"|"equal", "conf": 0.9}
@@ -189,11 +191,6 @@ def bootstrap_ci(pred, truth, metric="spearman", B=1000, seed=0):
     return np.nanpercentile(vals, [2.5, 97.5])
 
 
-def _joint():
-    import joint_model
-    return joint_model
-
-
 def zfuse(*scores, log=True):
     """Late fusion: average of z-scored (log-)scores."""
     nodes = list(scores[0])
@@ -203,62 +200,3 @@ def zfuse(*scores, log=True):
         v = np.log(np.maximum(v, 1e-12)) if log else v
         zs.append((v - v.mean()) / (v.std() + 1e-12))
     return dict(zip(nodes, np.mean(zs, 0)))
-
-
-def _demo(seed=42, lam=0.0, m=400, price_noise=0.7):
-    """Synthetic check. Hidden quality q (= benchmark). Comparisons ~ Bradley-Terry(q) with Zipf-like popularity.
-    Direct sentiment is PRICE-RELATIVE: logit = q - lam * price, price = q + noise (expensive phones are better
-    on average). lam=0: sentiment is an unbiased quality signal; lam -> 1: sentiment only says "good for the price"."""
-    rng = np.random.default_rng(seed)
-    out = {}
-    n = 30
-    nodes = [f"p{i:02d}" for i in range(n)]
-    q = rng.normal(size=n)  # hidden "benchmark" quality
-    comps, senti = [], defaultdict(lambda: {"pos": 0, "neg": 0})
-    pop = rng.dirichlet(np.ones(n) * 0.5)  # popularity skew: few phones get most comparisons
-    price = q + rng.normal(scale=price_noise, size=n)
-    for _ in range(m):
-        i, j = rng.choice(n, 2, replace=False, p=pop)
-        pi = 1 / (1 + np.exp(-(q[i] - q[j])))
-        w, l = (i, j) if rng.random() < pi else (j, i)
-        comps.append({"aspect": "BATTERY", "winner": nodes[w], "loser": nodes[l], "conf": 1.0})
-    for i in range(n):
-        k = rng.poisson(40 * pop[i] * n)
-        pos = rng.binomial(k, 1 / (1 + np.exp(-(q[i] - lam * price[i]))))
-        senti[(nodes[i], "BATTERY")] = {"pos": int(pos), "neg": int(k - pos)}
-    truth = dict(zip(nodes, q))
-    nodes_, W = build_matrix(comps, "BATTERY", nodes)
-    for name, f in [("win_rate", lambda: win_rate(nodes_, W)), ("bradley_terry", lambda: bradley_terry(nodes_, W)),
-                    ("pagerank", lambda: pagerank(nodes_, W)),
-                    ("pagerank/deg", lambda: degree_normalized(pagerank(nodes_, W), nodes_, W)),
-                    ("ppr", lambda: ppr(nodes_, W, "BATTERY", senti)),
-                    ("ppr/deg", lambda: degree_normalized(ppr(nodes_, W, "BATTERY", senti), nodes_, W)),
-                    ("random_walker", lambda: degree_normalized(random_walker(nodes_, W), nodes_, W)),
-                    ("pRank[Zhang10]", lambda: prank(nodes_, W, "BATTERY", senti)),
-                    ("pRank-edges", lambda: prank(nodes_, W, "BATTERY", senti, use_node_weight=False)),
-                    ("sentiment", lambda: dict(zip(nodes_, sentiment_prior(nodes_, "BATTERY", senti)))),
-                    ("price only", lambda: dict(zip(nodes, price))),
-                    ("JOINT (ours)", lambda: _joint().rank(nodes_, "BATTERY", comps, senti, dict(zip(nodes, price)))[0]),
-                    ("JOINT -price", lambda: _joint().rank(nodes_, "BATTERY", comps, senti, {})[0]),
-                    ("JOINT -comps", lambda: _joint().rank(nodes_, "BATTERY", [], senti, dict(zip(nodes, price)))[0]),
-                    ("BT+sentiment", lambda: zfuse(bradley_terry(nodes_, W),
-                                                   dict(zip(nodes_, sentiment_prior(nodes_, "BATTERY", senti)))))]:
-        out[name] = evaluate(f(), truth)
-    return out
-
-
-if __name__ == "__main__":
-    import sys
-    sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent))
-    lams = [0.0, 0.5, 0.8, 1.0]
-    for pn, desc in [(0.7, "strong price-quality link, corr(price,q)~0.82"), (1.5, "weak price-quality link, corr(price,q)~0.55")]:
-        res = {lam: [_demo(seed, lam=lam, price_noise=pn) for seed in range(30)] for lam in lams}
-        print(f"\n=== Synthetic study ({desc}): 30 products, 400 comparisons, Zipf popularity, 30 seeds ===")
-        print("Spearman rho vs hidden quality (mean ± sd); lam = how price-relative direct sentiment is.")
-        print(f"{'ranker':16s}" + "".join(f"lam={l:<12}" for l in lams))
-        for name in res[lams[0]][0]:
-            row = []
-            for lam in lams:
-                v = np.array([r[name]["spearman"] for r in res[lam]])
-                row.append(f"{v.mean():.3f}±{v.std():.2f}  ")
-            print(f"{name:16s}" + "".join(f"{c:16s}" for c in row))

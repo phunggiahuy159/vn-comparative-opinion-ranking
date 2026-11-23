@@ -47,6 +47,45 @@
         "brand:vivo": -0.174,
         "brand:xiaomi": 0.121
       }
+    },
+    "proxy": {
+      "target": "main MP (weak)",
+      "n": 9,
+      "sentiment": {
+        "spearman": 0.466,
+        "ci95": [
+          0.0,
+          0.915
+        ]
+      },
+      "Bradley-Terry": {
+        "spearman": NaN,
+        "ci95": [
+          NaN,
+          NaN
+        ]
+      },
+      "pRank": {
+        "spearman": 0.373,
+        "ci95": [
+          -0.164,
+          0.843
+        ]
+      },
+      "EDR": {
+        "spearman": 0.091,
+        "ci95": [
+          -0.743,
+          0.743
+        ]
+      },
+      "price only": {
+        "spearman": -0.092,
+        "ci95": [
+          -0.839,
+          0.843
+        ]
+      }
     }
   },
   "PERFORMANCE": {

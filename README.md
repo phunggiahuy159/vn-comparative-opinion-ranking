@@ -16,28 +16,25 @@ sentiment. It corrects the popularity and price-relative-sentiment biases of Pag
 ## Layout
 | Path | What |
 |---|---|
-| `src/absa_baseline.py` | TF-IDF + LR ABSA baseline on UIT-ViSFD |
-| `src/absa_transformer.py` | PhoBERT multi-task ABSA (one 4-way head per aspect); MPS/CUDA/CPU |
-| `src/absa_infer.py` | apply a trained ABSA checkpoint to new text (CPU) |
-| `src/compare_rules.py` | rule-based Vietnamese comparative extraction (L06), quintuples |
-| `src/llm_extract.py` | Qwen2.5-7B few-shot comparative quintuple extraction (silver labels; Kaggle) |
+| `src/edr.py` | **EDR, our model**: hedonic expectation + disconfirmation + γ chosen by held-out comparisons + Laplace posterior |
+| `src/baselines.py` | baseline rankers: win-rate, Bradley–Terry, PageRank (+variants), PPR, random walker, pRank (Zhang 2010), fusion; metrics |
+| `experiments/synthetic.py` | all synthetic experiments: E1 main table, E2 break-even, E3 sparsity, calibration → `results/synthetic/`, `figures/` |
+| `src/absa_baseline.py`, `src/absa_transformer.py`, `src/absa_infer.py` | ABSA: TF-IDF baseline, PhoBERT multi-task training, CPU inference |
+| `src/compare_rules.py`, `src/llm_extract.py` | comparative quintuple extraction: rules (L06) and Qwen2.5-7B few-shot (Kaggle) |
 | `src/entity_link.py` | product-mention linking (catalogue / brand group / external phone) |
-| `src/ranking.py` | rankers: win-rate, Bradley–Terry, PageRank (+variants), PPR, random walker, pRank, fusion; synthetic study 1 |
-| `src/joint_model.py` | **EDR model** (MAP, noise-aware BT, set comparisons, expectation covariates, bootstrap ranks) |
-| `src/study_advanced.py` | synthetic study 2: realistic failure modes + break-even curve |
-| `src/aspect_importance.py` | stars ~ aspect polarity regression (loss-aversion finding) |
-| `src/crawl_tgdd.py`, `src/crawl_prices.py`, `src/crawl_vnexpress.py` | polite crawlers (robots.txt, 5 s delay, no reviewer names) |
-| `src/pipeline_real.py`, `src/real_rank.py` | real-data pipeline: reviews → graph → rankings → benchmark eval |
-| `src/run_suite.py`, `configs/`, `kaggle/push.sh` | run experiment suites on Kaggle GPUs via the Kaggle CLI |
-| `results/` | metrics and study outputs (checkpoints are git-ignored) |
+| `src/crawl_tgdd.py`, `src/crawl_prices.py`, `src/crawl_vnexpress.py` | polite crawlers (robots.txt, 5 s delay, no reviewer names); prices + spec sheets |
+| `src/pipeline_real.py`, `src/real_rank.py` | real data: reviews → ABSA + comparisons → graph → all rankers + EDR, benchmark evaluation |
+| `src/aspect_importance.py` | real-data finding: star ratings vs aspect polarity (loss aversion) |
+| `src/run_suite.py`, `configs/`, `kaggle/push.sh` | run GPU experiment suites on Kaggle via the CLI |
+| `Makefile` | `make synthetic`, `make real`, `make report`, `make all` |
+| `results/`, `figures/` | metrics, study outputs, figures (checkpoints and crawled text are git-ignored) |
 
 ## Setup
 ```bash
 uv venv --python 3.11 .venv
-uv pip install --python .venv/bin/python -r requirements.txt torch transformers pyvi playwright requests pypdf
+uv pip install --python .venv/bin/python -r requirements.txt && .venv/bin/python -m playwright install chromium
 .venv/bin/python src/absa_baseline.py            # ~1 min, CPU
-.venv/bin/python src/ranking.py                  # synthetic study 1
-.venv/bin/python src/study_advanced.py           # synthetic study 2 (~2 min)
+make synthetic                                   # all synthetic experiments + figures (~12 min CPU)
 cd report && tectonic progress_report.tex        # build the report (XeLaTeX)
 ```
 Crawled data and model checkpoints are not in git. Re-create them with the crawlers and `src/absa_transformer.py`.

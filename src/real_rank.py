@@ -15,7 +15,8 @@ from scipy.stats import kendalltau, spearmanr
 
 sys.path.insert(0, str(Path(__file__).parent))
 from edr import EDR, select_gamma  # noqa: E402
-from ranking import bradley_terry, build_matrix, prank, sentiment_prior  # noqa: E402
+from baselines import bootstrap_ci, bradley_terry, build_matrix, prank, sentiment_prior  # noqa: E402
+import spec_proxies as SP  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 BENCH_COL = {"BATTERY": "battery_gsmarena_h", "CAMERA": "camera_dxomark", "PERFORMANCE": "perf_antutu", "SCREEN": "screen_dxomark"}
@@ -62,6 +63,10 @@ def main(min_reviews=10):
            and (c["loser"] in prods or c["loser"].startswith("group:")) and c not in ent]
     print(f"products(>= {min_reviews} reviews)={len(keys)}  entity comps={len(ent)}  brand comps={len(grp)}  with price={len(price)}")
     B = bench()
+    proxies = SP.load(allp)
+    T = SP.targets(proxies, SP.chip_scores())
+    tpl_chip, n_chip = SP.write_chip_template(proxies)
+    print(f"spec proxies: {len(proxies)} models; targets per aspect: { {a: len(v) for a, v in T.items()} }; chip template: {n_chip} chips")
     brand = {k: prods[k]["brand"] for k in keys}
     gmap = {b: [k for k in ks if k in prods] for b, ks in groups.items()}
     fitkw = dict(price=price or None, brand=brand, groups=gmap)
@@ -81,6 +86,19 @@ def main(min_reviews=10):
             res["price only"] = {k: price.get(k, np.nan) for k in keys}
         rankings[a] = {name: sorted(keys, key=lambda k: -np.nan_to_num(r[k], nan=-1e9)) for name, r in res.items()}
         evals[a] = {"edr": {"gamma": edr_gamma, "gamma_mode": edr_mode, "hedonic": {k: float(v) for k, v in edr_model.summary()["hedonic_coef"][a].items()}}}
+        proxy_msg = None
+        if T.get(a):
+            common = [k for k in keys if k in T[a]]
+            if len(common) >= 8:
+                evals[a]["proxy"] = {"target": {"BATTERY": "battery mAh", "SCREEN": "peak nits", "CAMERA": "main MP (weak)",
+                                                "PERFORMANCE": "chip AnTuTu"}[a], "n": len(common)}
+                for name, r in res.items():
+                    sub = {k: r[k] for k in common if np.isfinite(r.get(k, np.nan))}
+                    rho_ = spearmanr([sub[k] for k in sub], [T[a][k] for k in sub]).statistic
+                    lo, hi = bootstrap_ci(sub, T[a], B=1000)
+                    evals[a]["proxy"][name] = {"spearman": round(float(rho_), 3), "ci95": [round(float(lo), 3), round(float(hi), 3)]}
+                proxy_msg = (f"   proxy eval vs {evals[a]['proxy']['target']} (n={len(common)}): "
+                             + str({n: v["spearman"] for n, v in evals[a]["proxy"].items() if isinstance(v, dict)}))
         if a in B:
             common = [k for k in keys if k in B[a]]
             for name, r in res.items():
@@ -93,6 +111,8 @@ def main(min_reviews=10):
         for k in rankings[a]["EDR"][:8]:
             print(f"   {allp[k]['name'][:34]:34s} rank90%={ri[k]} n_rev={allp[k]['n_reviews']:3d}  "
                   f"pos/neg={senti.get((k, a), {}).get('pos', 0)}/{senti.get((k, a), {}).get('neg', 0)}")
+        if proxy_msg:
+            print(proxy_msg)
     (ROOT / "results" / "real_rankings.json").write_text(json.dumps(
         {a: {n: [allp[k]["name"] for k in r] for n, r in v.items()} for a, v in rankings.items()}, ensure_ascii=False, indent=1))
     (ROOT / "results" / "real_eval.json").write_text(json.dumps(evals, indent=2))
@@ -107,4 +127,6 @@ def main(min_reviews=10):
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    ap = argparse.ArgumentParser(); ap.add_argument("--min_reviews", type=int, default=10)
+    main(ap.parse_args().min_reviews)
