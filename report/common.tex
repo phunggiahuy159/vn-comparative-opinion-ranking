@@ -1,0 +1,50 @@
+% Shared preamble for all Group 20 reports (ICLR 2027 template, XeLaTeX via tectonic).
+% Usage:  \documentclass{article} \usepackage{iclr2027_conference} \iclrfinalcopy \input{common}
+\usepackage{fontspec}
+\setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+  ItalicFont=*-italic, BoldItalicFont=*-bolditalic]          % Times clone with Vietnamese glyphs
+\usepackage{amsmath,amssymb}
+\usepackage{unicode-math}
+\setmathfont{texgyretermes-math.otf}
+\usepackage{booktabs,tabularx,array}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{xcolor}
+\definecolor{linkblue}{HTML}{1F4E9A}
+\usepackage[colorlinks=true,linkcolor=linkblue,citecolor=linkblue,urlcolor=linkblue]{hyperref}
+\usepackage{url}
+\captionsetup{font=small,skip=3pt}
+\setlist{nosep,leftmargin=1.2em}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\graphicspath{{../figures/}}
+\raggedbottom
+
+% ---- project macros -----------------------------------------------------------------------------
+\newcommand{\repo}{\url{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}}
+\newcommand{\todo}[1]{\textbf{[TODO: #1]}}
+\newcommand{\groupauthors}{%
+  Phùng Gia Huy \\ \textnormal{20235506} \And
+  Vũ Hải An \\ \textnormal{20235468} \And
+  Chu Xuân Minh \\ \textnormal{20235527} \And
+  Nguyễn Bình Anh \\ \textnormal{20235470} \AND
+  \textnormal{Hanoi University of Science and Technology} \\
+  \textnormal{\texttt{\href{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}{github.com/phunggiahuy159/vn-comparative-opinion-ranking}}}}
+% pipeline diagram, used by both reports
+\newcommand{\pipeline}{%
+\begin{tikzpicture}[node distance=0.22cm, every node/.style={font=\scriptsize},
+  box/.style={draw, align=center, minimum height=0.8cm, text width=1.6cm, inner sep=2pt},
+  arr/.style={-{Stealth[length=3.5pt]}, semithick}]
+\node[box] (a) {Crawl reviews\\+ articles};
+\node[box, right=of a] (b) {ABSA\\(PhoBERT)};
+\node[box, right=of b] (c) {Comparative\\quintuples};
+\node[box, right=of c] (d) {Entity\\linking};
+\node[box, right=of d, very thick] (e) {\textbf{EDR ranking}\\+ intervals};
+\node[box, right=of e] (f) {Benchmark\\correlation};
+\foreach \x/\y in {a/b,b/c,c/d,d/e,e/f} \draw[arr] (\x) -- (\y);
+\end{tikzpicture}}
+\setlength{\bibsep}{1.5pt plus 0.5pt}                        % compact reference list

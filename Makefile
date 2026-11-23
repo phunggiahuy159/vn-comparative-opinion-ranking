@@ -28,6 +28,7 @@ real:                     ## real pipeline (needs data/ + PhoBERT checkpoint) â†
 	$(PY) src/pipeline_real.py
 	$(PY) src/real_rank.py
 
-report:                   ## LaTeX reports (XeLaTeX via tectonic; ICLR 2027 template)
+report:                   ## tables from results/ (report/make_tables.py), then both LaTeX reports (ICLR 2027 template, tectonic)
+	$(PY) report/make_tables.py
 	cd report && tectonic progress_report.tex && cp progress_report.pdf Group20_ProgressReport.pdf
 	cd report && tectonic final_report.tex

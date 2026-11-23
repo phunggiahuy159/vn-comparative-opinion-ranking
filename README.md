@@ -11,7 +11,7 @@ sentiment. It corrects the popularity and price-relative-sentiment biases of Pag
 
 - **Current status, open items and next steps: [STATUS.md](STATUS.md)** ← start here
 - Full plan, design decisions, related work: [PLAN.md](PLAN.md)
-- Reports (LaTeX, official ICLR 2027 template `report/iclr2027_conference.sty`, unmodified): [progress report](report/progress_report.tex) → `report/Group20_ProgressReport.pdf`; [final report draft](report/final_report.tex)
+- Reports (LaTeX, official ICLR 2027 template): [progress report](report/progress_report.tex) → `report/Group20_ProgressReport.pdf`; [final report draft](report/final_report.tex). Shared preamble `report/common.tex`, references `report/refs.bib`; every table and quoted number is generated from `results/` by `report/make_tables.py` (`make report`).
 
 ## Layout
 | Path | What |

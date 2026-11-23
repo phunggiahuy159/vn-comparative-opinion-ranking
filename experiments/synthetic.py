@@ -23,7 +23,7 @@ from scipy.stats import spearmanr
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
-from baselines import bradley_terry, build_matrix, pagerank, prank, sentiment_prior, zfuse  # noqa: E402
+from baselines import bradley_terry, build_matrix, hits, pagerank, prank, sentiment_prior, zfuse  # noqa: E402
 from edr import EDR, select_gamma  # noqa: E402
 
 AS = ["BATTERY", "CAMERA"]
@@ -74,7 +74,7 @@ def evaluate_world(W, ablations=False, calibration=False):
     nodes, M = build_matrix(ent, a, P)
     senti_score = dict(zip(nodes, sentiment_prior(nodes, a, W["senti"])))
     bt = bradley_terry(nodes, M)
-    r = {"price only": rho(W["price"]), "sentiment only": rho(senti_score), "PageRank": rho(pagerank(nodes, M)),
+    r = {"price only": rho(W["price"]), "sentiment only": rho(senti_score), "PageRank": rho(pagerank(nodes, M)), "HITS": rho(hits(nodes, M)),
          "pRank [Zhang 2010]": rho(prank(nodes, M, a, W["senti"])), "Bradley-Terry": rho(bt),
          "BT + sentiment": rho(zfuse(bt, senti_score))}
     fitkw = dict(price=W["price"], brand=W["brand"], groups=W["groups"])

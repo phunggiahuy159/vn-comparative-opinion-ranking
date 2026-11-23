@@ -1,41 +1,13 @@
-% IT4868E Web Mining — Capstone Final Report (draft, Group 20). ICLR 2027 template (iclr2027_conference.sty, unmodified).
-% Build:  cd report && tectonic final_report.tex   (XeLaTeX: TeX Gyre Termes = Times with Vietnamese glyphs)
+% IT4868E Web Mining — Capstone Final Report (draft, Group 20). ICLR 2027 template.
+% Build:  make report   (runs report/make_tables.py, then tectonic; tables/ and numbers come from results/)
 \documentclass{article}
 \usepackage{iclr2027_conference}
 \iclrfinalcopy
-\usepackage{fontspec}
-\setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
-  ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
-\usepackage{amsmath,amssymb}
-\usepackage{unicode-math}
-\setmathfont{texgyretermes-math.otf}
-\usepackage{booktabs,tabularx,array}
-\usepackage{graphicx}
-\usepackage{subcaption}
-\usepackage{tikz}
-\usetikzlibrary{positioning,arrows.meta}
-\usepackage{enumitem}
-\usepackage{caption}
-\usepackage{xcolor}
-\definecolor{linkblue}{HTML}{1F4E9A}
-\usepackage[colorlinks=true,linkcolor=linkblue,citecolor=linkblue,urlcolor=linkblue]{hyperref}
-\usepackage{url}
-\captionsetup{font=small,skip=3pt}
-\setlist{nosep,leftmargin=1.2em}
-\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
-\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
-\graphicspath{{../figures/}}
-\raggedbottom
-
-\newcommand{\todo}[1]{\textbf{[TODO: #1]}}
+\input{common}
+\input{tables/numbers}
 
 \title{Expectation--Disconfirmation Ranking:\\Mining Vietnamese Reviews to Rank\\Smartphones by Aspect}
-\author{Phùng Gia Huy \\ \textnormal{20235506} \And
-Vũ Hải An \\ \textnormal{20235468} \And
-Chu Xuân Minh \\ \textnormal{20235527} \And
-Nguyễn Bình Anh \\ \textnormal{20235470} \AND
-\textnormal{Hanoi University of Science and Technology} \\
-\textnormal{\texttt{\href{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}{github.com/phunggiahuy159/vn-comparative-opinion-ranking}}}}
+\author{\groupauthors}
 
 \begin{document}
 \maketitle
@@ -80,7 +52,7 @@ Pre-trained encoders such as PhoBERT \citep{phobert} are the standard backbone.
 \paragraph{Comparative opinion mining} extracts relations $\langle$entity$_1$, entity$_2$, aspect, predicate, type$\rangle$ \citep{jindal2006}.
 For Vietnamese, the VLSP~2023 ComOM shared task \citep{vcom} defines quintuples with 8 comparison labels.
 \paragraph{Ranking from opinions.} \citet{zhang2010} build a per-feature graph from comparative sentences, weight nodes by the ratio of positive to negative
-subjective sentences, and rank with pRank, a PageRank variant \citep{pagerank}. Paired-comparison models \citep{bt1952} rank from noisy pairwise outcomes.
+subjective sentences, and rank with pRank, a PageRank variant \citep{pagerank}; HITS \citep{hits} is the other classic link-analysis ranker. Paired-comparison models \citep{bt1952} rank from noisy pairwise outcomes.
 \paragraph{Expectations.} Expectation--disconfirmation theory \citep{oliver1980} models satisfaction as performance relative to expectation.
 Prospect theory \citep{kt1979} adds loss aversion. To our knowledge these have not been used to de-bias opinion-based product rankings.
 
@@ -99,16 +71,7 @@ plus listed prices and spec sheets. robots.txt was respected (5\,s delay), and n
 \section{Method}
 \subsection{Pipeline}
 \begin{center}
-\begin{tikzpicture}[node distance=0.22cm, every node/.style={font=\scriptsize},
-  g20box/.style={draw, align=center, minimum height=0.8cm, inner sep=2pt}, g20ours/.style={g20box, very thick, font=\scriptsize\bfseries},
-  g20arr/.style={-{Stealth[length=3.5pt]}, semithick}]
-\node[g20box, text width=2.0cm] (r) {Buyer reviews\\+ expert articles};
-\node[g20box, text width=2.0cm, right=of r] (a) {Aspect sentiment\\PhoBERT, multi-task};
-\node[g20box, text width=2.0cm, right=of a] (c) {Comparative quintuples\\rules / LLM};
-\node[g20box, text width=2.0cm, right=of c] (e) {Entity linking\\subject, brands};
-\node[g20ours, text width=2.0cm, right=of e] (m) {EDR ranking\\+ rank intervals};
-\foreach \x/\y in {r/a,a/c,c/e,e/m} \draw[g20arr] (\x) -- (\y);
-\end{tikzpicture}
+\pipeline
 \end{center}
 \paragraph{ABSA.} PhoBERT-base-v2 with a shared encoder ([CLS] + mean pooling) and one 4-way head per aspect (none / positive / negative / neutral),
 trained with a class-weighted loss. Word segmentation uses pyvi.
@@ -137,43 +100,23 @@ Head-to-head comparisons are not price-relative, so we choose $\gamma$ from a gr
 \section{Experiments}
 \subsection{ABSA (UIT-ViSFD test set)}
 \begin{center}\small
-\begin{tabular}{@{}lcc@{}}\toprule
-Model & Aspect detection micro-F1 & Aspect\#polarity micro-F1\\\midrule
-TF-IDF + multinomial Naive Bayes & 0.709 & 0.600\\
-TF-IDF + linear SVM & 0.822 & 0.713\\
-TF-IDF + logistic regression & 0.829 & 0.710\\
-PhoBERT-base-v2, multi-task & \textbf{0.890} & \textbf{0.815}\\
-\multicolumn{3}{@{}l}{\todo{PhoBERT-large / XLM-R, 3 seeds (Kaggle)}} \\\bottomrule
-\end{tabular}\end{center}
+\setlength{\tabcolsep}{5pt}\input{tables/absa}\end{center}
+\todo{add PhoBERT-large / XLM-R rows, 3 seeds (Kaggle)}
 
 \subsection{Controlled simulation}\label{sec:synthetic}
 The simulated world has 40 phones in 6 brands. True quality follows a hedonic market, and sentiment is price-relative with strength $\gamma$.
 Comparisons follow Bradley--Terry with Zipf-like popularity; 30\% of them name only a brand, and extraction flips their direction with rate $\varepsilon$.
 \begin{table}[h]\centering\footnotesize\setlength{\tabcolsep}{5pt}
 \caption{Spearman $\rho$ against true quality, mean over 20 seeds ($\varepsilon=0.1$, 300 comparisons per aspect). Columns: true price-relativity $\gamma$.}\label{tab:e1}
-\begin{tabular}{@{}lccc@{}}\toprule
-\sffamily Ranker & \sffamily $\gamma=0$ & \sffamily $\gamma=0.5$ & \sffamily $\gamma=0.8$ \\\midrule
-Price only & 0.634 & 0.634 & 0.634 \\
-Sentiment only & 0.838 & 0.777 & 0.661 \\
-PageRank & 0.136 & 0.136 & 0.136 \\
-pRank \citep{zhang2010} & 0.841 & 0.778 & 0.664 \\
-Bradley--Terry & 0.521 & 0.521 & 0.521 \\
-Bradley--Terry + sentiment & 0.746 & 0.725 & 0.677 \\
-\textbf{EDR (ours)} & \textbf{0.855} & \textbf{0.833} & \textbf{0.818} \\
-\midrule
-\quad ablation: $\gamma=0$ fixed & 0.856 & 0.789 & 0.683 \\
-\quad ablation: $\gamma$ learned jointly & 0.809 & 0.810 & 0.808 \\
-\quad ablation: no hedonic prior & 0.829 & 0.811 & 0.808 \\
-\quad selected $\gamma$ (true value in header) & 0.18 & 0.48 & 0.60 \\
-\bottomrule\end{tabular}\end{table}
+\input{tables/synthetic}\end{table}
 
 \begin{figure}[h]
 \centering
 \begin{subfigure}{0.49\textwidth}\includegraphics[width=\linewidth]{breakeven.pdf}\caption{Break-even ($\gamma=0.8$).}\end{subfigure}
 \begin{subfigure}{0.49\textwidth}\includegraphics[width=\linewidth]{sparsity.pdf}\caption{Data volume ($\gamma=0.8$, $\varepsilon=0.1$).}\end{subfigure}
 \begin{subfigure}{0.34\textwidth}\includegraphics[width=\linewidth]{calibration.pdf}\caption{Calibration.}\end{subfigure}
-\caption{Synthetic results (mean $\pm$ s.e.). EDR stays above ranking by price at every tested error rate (margin 0.17 at $\varepsilon=0$, 0.04 at $0.4$). Bradley--Terry + sentiment
-falls below price at $\varepsilon\approx0.1$, and pRank tracks sentiment. EDR's pairwise probabilities are roughly calibrated (ECE 0.08) but somewhat overconfident at the extremes.}
+\caption{Synthetic results (mean $\pm$ s.e.). EDR stays above ranking by price at every tested error rate (margin \MarginLow{} at $\varepsilon=0$, \MarginHigh{} at $0.4$). Bradley--Terry + sentiment
+falls below price at $\varepsilon\approx0.1$, and pRank tracks sentiment. EDR's pairwise probabilities are roughly calibrated (ECE \ECE) but somewhat overconfident at the extremes.}
 \end{figure}
 
 \subsection{Real data}
@@ -186,18 +129,13 @@ and $\gamma$ cannot be selected by held-out comparisons (we fall back to the joi
 \begin{table}[h]\centering\small\setlength{\tabcolsep}{4pt}
 \caption{Preliminary real-data results: Spearman $\rho$ (95\% bootstrap CI) between each ranking and the spec-sheet proxy,
 smartphones with ${\ge}10$ reviews from both stores. Without head-to-head comparisons, PageRank, HITS and Bradley--Terry are undefined.}\label{tab:real}
-\begin{tabular}{@{}llcccc@{}}\toprule
-Aspect & Proxy ($n$) & Price only & Sentiment & pRank & EDR \\\midrule
-Battery & mAh (23) & $-0.10$ {\scriptsize[$-0.50$, 0.35]} & 0.04 {\scriptsize[$-0.36$, 0.46]} & 0.06 {\scriptsize[$-0.32$, 0.45]} & 0.06 {\scriptsize[$-0.31$, 0.45]} \\
-Screen & peak nits (21) & 0.63 {\scriptsize[0.18, 0.91]} & 0.66 {\scriptsize[0.40, 0.83]} & 0.66 {\scriptsize[0.40, 0.84]} & 0.55 {\scriptsize[0.11, 0.81]} \\
-Camera & main MP, weak (35) & $-0.30$ {\scriptsize[$-0.65$, 0.09]} & 0.24 {\scriptsize[$-0.05$, 0.48]} & 0.23 {\scriptsize[$-0.04$, 0.48]} & 0.19 {\scriptsize[$-0.15$, 0.47]} \\
-\bottomrule\end{tabular}\end{table}
+\input{tables/real}\end{table}
 
 \paragraph{Discussion.} Price fails where the simulation predicts: budget phones have the biggest batteries and the most megapixels,
 so ranking by price is negatively correlated with both. Review-based rankings recover a clear signal only for the screen, and
 EDR does not improve on sentiment ranking here: without comparisons it cannot tell price-relative from absolute praise. With about 20 phones per aspect and
 mostly fewer than 10 aspect mentions per phone, the confidence intervals overlap and the rankers are not yet distinguishable.
-\todo{rerun with expert-article comparisons (LLM extraction) and a second review source; chip $\to$ AnTuTu for performance}
+\todo{rerun with expert-article comparisons (LLM extraction); chip $\to$ AnTuTu for performance}
 
 \section{Findings about Vietnamese buyers}
 \paragraph{Loss aversion.} Regressing star ratings on aspect polarity in ViSFD ($R^2=0.615$, $n=11{,}122$) shows that negative mentions cost
@@ -214,15 +152,6 @@ Review counts per phone are modest. All crawling followed robots.txt with rate l
 \todo{after real results}
 
 {\small
-\begin{thebibliography}{12}\setlength{\itemsep}{1pt}
-\bibitem[Bradley \& Terry(1952)]{bt1952} R.~A. Bradley and M.~E. Terry. Rank analysis of incomplete block designs I: The method of paired comparisons. \emph{Biometrika}, 39, 1952.
-\bibitem[Jindal \& Liu(2006)]{jindal2006} N.~Jindal and B.~Liu. Mining comparative sentences and relations. In \emph{AAAI}, 2006.
-\bibitem[Kahneman \& Tversky(1979)]{kt1979} D.~Kahneman and A.~Tversky. Prospect theory: An analysis of decision under risk. \emph{Econometrica}, 47(2), 1979.
-\bibitem[Le et~al.(2024)]{vcom} H.-Q. Le, D.-C. Can, K.-H. Nguyen, and M.-V. Tran. Overview of the VLSP 2023 -- ComOM shared task. arXiv:2402.13613, 2024.
-\bibitem[Nguyen \& Nguyen(2020)]{phobert} D.~Q. Nguyen and A.~T. Nguyen. PhoBERT: Pre-trained language models for Vietnamese. In \emph{Findings of EMNLP}, 2020.
-\bibitem[Oliver(1980)]{oliver1980} R.~L. Oliver. A cognitive model of the antecedents and consequences of satisfaction decisions. \emph{Journal of Marketing Research}, 17(4), 1980.
-\bibitem[Page et~al.(1999)]{pagerank} L.~Page, S.~Brin, R.~Motwani, and T.~Winograd. The PageRank citation ranking: Bringing order to the web. Stanford technical report, 1999.
-\bibitem[Phan et~al.(2021)]{visfd} L.~L. Phan et~al. SA2SL: From aspect-based sentiment analysis to social listening system for business intelligence. In \emph{KSEM}, 2021.
-\bibitem[Zhang et~al.(2010)]{zhang2010} K.~Zhang, R.~Narayanan, and A.~Choudhary. Voice of the customers: Mining online customer reviews for product feature-based ranking. In \emph{WOSN}, 2010.
-\end{thebibliography}}
+\bibliographystyle{iclr2027_conference}
+\bibliography{refs}}
 \end{document}
