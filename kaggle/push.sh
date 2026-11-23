@@ -11,6 +11,8 @@ SLUG=$1; CMD=$2; PIP=$3; shift 3
 USER_NAME=$(kaggle config view 2>/dev/null | awk -F': ' '/username/{print $2}' | tr -d ' ')
 [ -z "$USER_NAME" ] && { echo "Not logged in: run 'kaggle auth login'"; exit 1; }
 DIR=kaggle/build/$SLUG; rm -rf "$DIR"; mkdir -p "$DIR"
+# GPU=0 → CPU kernel (starts immediately; Kaggle GPU queue is often full)
+if [ "${GPU:-1}" = "0" ]; then GPU_JSON=false; ACC_ARGS=(); else GPU_JSON=true; ACC_ARGS=(--accelerator "${ACCEL:-NvidiaTeslaT4}"); fi
 
 python3 - "$DIR/run.py" "$CMD" "$PIP" "$@" <<'EOF'
 import base64, json, sys
@@ -26,7 +28,7 @@ PIP = {json.dumps(pip)}
 if PIP:
     subprocess.run([sys.executable, "-m", "pip", "install", "-q", *PIP], check=True)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-subprocess.run("nvidia-smi --query-gpu=name,memory.total --format=csv", shell=True)
+subprocess.run("nvidia-smi --query-gpu=name,memory.total --format=csv || nproc", shell=True)
 rc = subprocess.run({json.dumps(cmd)}, shell=True, cwd=PROJ).returncode
 # drop the source copy, keep results/ as kernel output
 for name in FILES:
@@ -44,7 +46,7 @@ cat > "$DIR/kernel-metadata.json" <<EOF
   "language": "python",
   "kernel_type": "script",
   "is_private": true,
-  "enable_gpu": true,
+  "enable_gpu": ${GPU_JSON},
   "enable_internet": true,
   "dataset_sources": [],
   "competition_sources": [],
@@ -52,6 +54,6 @@ cat > "$DIR/kernel-metadata.json" <<EOF
 }
 EOF
 python3 -c "import ast; ast.parse(open('$DIR/run.py').read())"
-OUT=$(kaggle kernels push -p "$DIR" --accelerator "${ACCEL:-NvidiaTeslaT4}" 2>&1); echo "$OUT"
+OUT=$(kaggle kernels push -p "$DIR" ${ACC_ARGS[@]+"${ACC_ARGS[@]}"} 2>&1); echo "$OUT"
 echo "$OUT" | grep -q "successfully pushed" || { echo "PUSH FAILED: $USER_NAME/$SLUG"; exit 1; }
 echo "pushed $USER_NAME/$SLUG"

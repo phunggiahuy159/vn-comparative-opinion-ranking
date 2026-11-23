@@ -155,6 +155,33 @@ def comparisons_articles(articles, cat):
     return comps
 
 
+def comparisons_expert_llm(cat, path=ROOT / "results" / "llm_expert_tuples.jsonl"):
+    """Expert comparisons from LLM quintuples on VnExpress sentences (src/expert_candidates.py → src/llm_extract.py).
+    THIS = the article's title phone; COM+/COM-/EQL become graph edges with source='expert'."""
+    if not path.exists():
+        return []
+    comps, seen = [], set()
+    for line in open(path):
+        r = json.loads(line)
+        for t in r.get("llm_tuples") or []:
+            lab = t.get("label")
+            if lab not in ("COM+", "COM-", "EQL") or not t.get("object"):
+                continue
+            subj = r.get("title_product") if str(t.get("subject", "")).upper() == "THIS" else cat.link(str(t.get("subject", "")))
+            obj = cat.link(str(t["object"]))
+            if not subj or not obj or subj == obj:
+                continue
+            aspect = t.get("aspect") if t.get("aspect") in RANKED else "GENERAL"
+            w, l = (subj, obj) if lab in ("COM+", "EQL") else (obj, subj)
+            key = (r["id"], w, l, aspect)
+            if key in seen:
+                continue
+            seen.add(key)
+            comps.append({"winner": w, "loser": l, "aspect": aspect, "conf": 1.0, "source": "expert",
+                          "type": "equal" if lab == "EQL" else "better", "evidence": r["comment"][:200], "url": r.get("url")})
+    return comps
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--extractor", default="rules")
@@ -165,6 +192,8 @@ def main():
     cat = Catalogue(products)
     senti, _ = absa_counts(reviews, ROOT / "data" / "real_absa_cache.jsonl")
     comps, raw, unresolved = comparisons_rules(reviews, cat)
+    expert = comparisons_expert_llm(cat)
+    comps += expert
 
     kinds = collections.Counter(("cat" if c["winner"] in products else c["winner"].split(":")[0]) + "-" +
                                 ("cat" if c["loser"] in products else c["loser"].split(":")[0]) for c in comps)
@@ -172,7 +201,7 @@ def main():
              "products": len(products),
              "products_with_price": sum(p["price"] is not None for p in products.values()),
              "products_>=20_reviews": sum(p["n_reviews"] >= 20 for p in products.values()),
-             "rule_tuples_with_object": raw, "linked_comparisons": len(comps), "edge_kinds": dict(kinds),
+             "rule_tuples_with_object": raw, "linked_comparisons": len(comps), "expert_llm_comparisons": len(expert), "edge_kinds": dict(kinds),
              "by_aspect": dict(collections.Counter(c["aspect"] for c in comps)),
              "top_unresolved_objects": unresolved.most_common(10),
              "absa_aspect_mentions": {a: sum(v["pos"] + v["neg"] for (p, aa), v in senti.items() if aa == a) for a in RANKED}}

@@ -8,9 +8,9 @@ Quintuple = (subject, object, aspect, predicate, label), VCOM/VLSP-2023 label se
 Subject "THIS" = the product the review is posted under (implicit subject, L06-03 entity assignment).
 Aspect is mapped to the UIT-ViSFD categories so it joins with the ABSA output.
 
-Input : data/comparative_candidates.jsonl (from compare_rules.py)
-Output: results/llm_tuples.jsonl
-Runs on Kaggle 2×T4 (fp16, device_map=auto). Usage: python src/llm_extract.py [--limit N]
+Input : data/comparative_candidates.jsonl (buyer reviews, from compare_rules.py) or data/expert_candidates.jsonl (VnExpress)
+Output: results/llm_tuples.jsonl (or --output)
+Runs on Kaggle GPU (fp16 / 4-bit) or CPU (bf16, small model). Usage: python src/llm_extract.py [--input F --output F --limit N]
 """
 import argparse
 import json
@@ -82,7 +82,10 @@ def parse(raw):
 
 
 def load_model(name):
-    """fp16 if total GPU memory >= 28 GB (e.g. 2xT4); else 4-bit (bitsandbytes); else fall back to Qwen2.5-3B fp16."""
+    """CPU: bfloat16 (use a small model, e.g. Qwen2.5-3B). GPU: fp16 if total memory >= 28 GB (2xT4); else 4-bit; else Qwen2.5-3B fp16."""
+    if not torch.cuda.is_available():
+        torch.set_num_threads(max(1, torch.get_num_threads()))
+        return AutoModelForCausalLM.from_pretrained(name, torch_dtype=torch.bfloat16), f"{name}|cpu-bf16"
     total = sum(torch.cuda.get_device_properties(i).total_memory for i in range(torch.cuda.device_count())) / 2**30
     if total >= 28:
         return AutoModelForCausalLM.from_pretrained(name, torch_dtype=torch.float16, device_map="auto"), f"{name}|fp16"
@@ -106,16 +109,18 @@ def main():
     ap.add_argument("--bs", type=int, default=24)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--max_new", type=int, default=320)
+    ap.add_argument("--input", default="data/comparative_candidates.jsonl", help="jsonl rows with id, comment[, rule_tuples]")
+    ap.add_argument("--output", default="results/llm_tuples.jsonl")
     args = ap.parse_args()
 
-    rows = [json.loads(l) for l in open(ROOT / "data" / "comparative_candidates.jsonl")]
+    rows = [json.loads(l) for l in open(ROOT / args.input)]
     if args.limit:
         rows = rows[:args.limit]
     model, used = load_model(args.model)
     tok = AutoTokenizer.from_pretrained(used.split("|")[0], padding_side="left")
     print("model:", used, flush=True)
     model.eval()
-    out_path = ROOT / "results" / "llm_tuples.jsonl"
+    out_path = ROOT / args.output
     out_path.parent.mkdir(exist_ok=True)
     # sort by length so batches pad less
     order = sorted(range(len(rows)), key=lambda i: len(rows[i]["comment"]))
@@ -135,7 +140,8 @@ def main():
                 n_fail += tuples is None
                 f.write(json.dumps({"model": used, "id": rows[i]["id"], "comment": rows[i]["comment"], "raw": raw,
                                     "llm_tuples": tuples or [], "parse_ok": tuples is not None,
-                                    "rule_tuples": rows[i]["rule_tuples"]}, ensure_ascii=False) + "\n")
+                                    "rule_tuples": rows[i].get("rule_tuples", []),
+                                    **{k: rows[i][k] for k in ("url", "title_product") if k in rows[i]}}, ensure_ascii=False) + "\n")
             f.flush()
             done = b + len(idx)
             print(f"{done}/{len(rows)}  {time.time() - t0:.0f}s  parse_fail={n_fail}", flush=True)
