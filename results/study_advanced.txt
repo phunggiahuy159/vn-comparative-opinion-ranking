@@ -1,0 +1,95 @@
+
+=== 400 comparisons/aspect, flip rate eps=0.0, 40% brand-only mentions, lam=0.8 ===
+method                            Spearman ρ   held-out acc
+Bradley-Terry                     0.603±0.09        0.688
+pRank [Zhang 2010]                0.476±0.11            —
+BT + sentiment                    0.641±0.09            —
+price only                        0.645±0.07            —
+EDR: price expectation            0.762±0.07        0.705
+  + brand expectation             0.795±0.05        0.731
+  + brand-level comps             0.788±0.05        0.736
+  + noise-aware, eps learned      0.786±0.05        0.735
+  (learned eps value)             0.017
+  + noise-aware, eps measured     0.788±0.05        0.736
+sentiment only                    0.470±0.11            —
+
+=== 400 comparisons/aspect, flip rate eps=0.15, 40% brand-only mentions, lam=0.8 ===
+method                            Spearman ρ   held-out acc
+Bradley-Terry                     0.444±0.14        0.615
+pRank [Zhang 2010]                0.473±0.11            —
+BT + sentiment                    0.530±0.12            —
+price only                        0.645±0.07            —
+EDR: price expectation            0.720±0.07        0.620
+  + brand expectation             0.717±0.07        0.640
+  + brand-level comps             0.721±0.07        0.647
+  + noise-aware, eps learned      0.726±0.07        0.648
+  (learned eps value)             0.027
+  + noise-aware, eps measured     0.732±0.07        0.653
+sentiment only                    0.470±0.11            —
+
+=== 400 comparisons/aspect, flip rate eps=0.3, 40% brand-only mentions, lam=0.8 ===
+method                            Spearman ρ   held-out acc
+Bradley-Terry                     0.258±0.18        0.524
+pRank [Zhang 2010]                0.473±0.11            —
+BT + sentiment                    0.435±0.14            —
+price only                        0.645±0.07            —
+EDR: price expectation            0.651±0.10        0.555
+  + brand expectation             0.602±0.12        0.574
+  + brand-level comps             0.613±0.13        0.568
+  + noise-aware, eps learned      0.616±0.13        0.569
+  (learned eps value)             0.040
+  + noise-aware, eps measured     0.648±0.10        0.568
+sentiment only                    0.470±0.11            —
+
+=== 150 comparisons/aspect, flip rate eps=0.0, 40% brand-only mentions, lam=0.8 ===
+method                            Spearman ρ   held-out acc
+Bradley-Terry                     0.448±0.12        0.624
+pRank [Zhang 2010]                0.484±0.16            —
+BT + sentiment                    0.563±0.12            —
+price only                        0.645±0.07            —
+EDR: price expectation            0.736±0.08        0.679
+  + brand expectation             0.738±0.09        0.691
+  + brand-level comps             0.738±0.08        0.688
+  + noise-aware, eps learned      0.735±0.08        0.691
+  (learned eps value)             0.023
+  + noise-aware, eps measured     0.738±0.08        0.688
+sentiment only                    0.478±0.16            —
+
+=== 150 comparisons/aspect, flip rate eps=0.15, 40% brand-only mentions, lam=0.8 ===
+method                            Spearman ρ   held-out acc
+Bradley-Terry                     0.304±0.14        0.580
+pRank [Zhang 2010]                0.481±0.16            —
+BT + sentiment                    0.486±0.16            —
+price only                        0.645±0.07            —
+EDR: price expectation            0.697±0.10        0.590
+  + brand expectation             0.666±0.12        0.608
+  + brand-level comps             0.673±0.12        0.596
+  + noise-aware, eps learned      0.674±0.12        0.594
+  (learned eps value)             0.033
+  + noise-aware, eps measured     0.672±0.11        0.579
+sentiment only                    0.478±0.16            —
+
+=== 150 comparisons/aspect, flip rate eps=0.3, 40% brand-only mentions, lam=0.8 ===
+method                            Spearman ρ   held-out acc
+Bradley-Terry                     0.184±0.17        0.512
+pRank [Zhang 2010]                0.476±0.16            —
+BT + sentiment                    0.411±0.18            —
+price only                        0.645±0.07            —
+EDR: price expectation            0.637±0.13        0.538
+  + brand expectation             0.560±0.15        0.540
+  + brand-level comps             0.568±0.16        0.519
+  + noise-aware, eps learned      0.572±0.16        0.521
+  (learned eps value)             0.043
+  + noise-aware, eps measured     0.575±0.14        0.535
+sentiment only                    0.478±0.16            —
+
+=== Break-even: Spearman ρ vs extraction flip rate (400 comps, 20 seeds) ===
+   eps   EDR full(meas.)   sentiment  price only   BT+sent   pRank
+  0.00             0.796       0.477       0.635     0.656   0.490
+  0.05             0.779       0.477       0.635     0.623   0.489
+  0.10             0.746       0.477       0.635     0.567   0.486
+  0.15             0.722       0.477       0.635     0.534   0.484
+  0.20             0.687       0.477       0.635     0.485   0.483
+  0.25             0.663       0.477       0.635     0.454   0.485
+  0.30             0.634       0.477       0.635     0.428   0.483
+  0.35             0.570       0.477       0.635     0.393   0.483

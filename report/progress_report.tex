@@ -1,0 +1,244 @@
+% IT4868E Web Mining — Capstone Progress Report
+% Build:  tectonic progress_report.tex   (XeLaTeX engine; fonts fetched automatically)
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[a4paper,top=1.5cm,bottom=1.5cm,left=1.7cm,right=1.7cm]{geometry}
+\usepackage{fontspec}
+\setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+  ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+\usepackage{amsmath,amssymb}
+\usepackage{unicode-math}
+\setmathfont{texgyretermes-math.otf}
+\usepackage{booktabs,tabularx,multirow,array}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection.}{0.4em}{}
+\titlespacing*{\section}{0pt}{7pt}{3pt}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.4em}{}
+\titlespacing*{\subsection}{0pt}{5pt}{2pt}
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0pt}
+\setlist{nosep,leftmargin=1.2em}
+\captionsetup{font=small,skip=2pt}
+\renewcommand{\arraystretch}{1.08}
+\newcommand{\fillin}[1]{\colorbox{yellow!45}{#1}}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Vietnamese Aspect-Based Opinion Mining and Comparative Product Ranking}\\[3pt]
+IT4868E Web Mining --- Capstone Project Progress Report --- \textbf{Group 20} --- 23/11/2026\\[1pt]
+Phùng Gia Huy (20235506) \quad Vũ Hải An (20235468) \quad Chu Xuân Minh (20235527) \quad Nguyễn Bình Anh (20235470)\\[1pt]
+Code repository: \url{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}
+\end{center}
+\vspace{-6pt}
+
+%==================================================================================================
+\section{Problem statement}
+As stated in our proposal, we mine Vietnamese smartphone reviews to
+(i)~extract product \textbf{aspects} and the \textbf{sentiment} toward each aspect,
+(ii)~extract \textbf{comparative opinions} between products (e.g.\ \emph{``pin trâu hơn con A50''}),
+and (iii)~model the comparisons as a per-aspect \textbf{product graph} on which PageRank-style link analysis
+ranks products by aspect (battery, camera, performance, screen).
+The rankings are \textbf{validated against objective benchmark scores}: GSMArena battery tests,
+DXOMARK camera/display and AnTuTu/Geekbench performance.
+The project combines lectures L05 (link analysis), L06 (opinion mining: aspect-level sentiment, entity assignment,
+comparative sentences), L07 (information extraction) and L02/L04 (machine learning, evaluation).
+
+\textbf{Related work and positioning.} The closest prior work is Zhang et al.~\cite{zhang2010}. They rank English
+Amazon products per feature with \emph{pRank}, a PageRank variant run on a graph of comparative sentences, with each score multiplied by a node weight
+(the ratio of positive to negative subjective sentences). Their evaluation is against expert judgments. We reproduce pRank as a baseline and do not claim
+the graph idea as new. Our contributions are:
+(1)~the Vietnamese setting, where comparatives are analytic (\emph{hơn / không bằng / thua}), some predicates reverse the direction
+(\emph{``nóng hơn''}), and the subject is usually implicit (\emph{``con này''});
+(2)~evaluation against objective benchmarks;
+(3)~an analysis showing that PageRank-style rankers confound popularity and price-relative sentiment;
+(4)~\textbf{Expectation--Disconfirmation Ranking (EDR)}, a joint model that corrects both; and
+(5)~a break-even analysis of how accurate comparative extraction must be for it to improve ranking.
+
+\begin{center}
+\begin{tikzpicture}[node distance=0.32cm, every node/.style={font=\footnotesize},
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=0.85cm, text width=2.15cm, fill=gray!6},
+  arr/.style={-{Stealth[length=4pt]}, thick}]
+\node[box] (a) {Crawl reviews\\per product};
+\node[box, right=of a] (b) {ABSA\\(PhoBERT, 10 aspects)};
+\node[box, right=of b] (c) {Comparative quintuples\\(rules / LLM)};
+\node[box, right=of c] (d) {Entity linking\\(implicit subject)};
+\node[box, right=of d] (e) {Per-aspect graph\\+ EDR ranking};
+\node[box, right=of e] (f) {Correlation with\\benchmarks};
+\foreach \x/\y in {a/b,b/c,c/d,d/e,e/f} \draw[arr] (\x) -- (\y);
+\end{tikzpicture}
+\end{center}
+\vspace{-8pt}
+
+%==================================================================================================
+\section{Datasets}
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.6cm}l@{}}
+\toprule
+Dataset & Size & Role & Status \\
+\midrule
+UIT-ViSFD~\cite{visfd} & 11{,}122 comments (7{,}786 / 1{,}112 / 2{,}224); 10 aspects + OTHERS; pos/neg/neu & Train / evaluate ABSA & done \\
+VCOM, VLSP 2023 ComOM~\cite{vcom} & 9{,}225 sentences, 1{,}798 comparative, 2{,}468 quintuples; 8 labels & Comparative extraction & requested \\
+Crawl of thegioididong.com (source of ViSFD) & 279 phone pages ($\approx$177 models, 2023--2026); 947 reviews from the first 106 pages & Inference corpus for ranking & running \\
+Benchmarks (GSMArena, DXOMARK, AnTuTu) & target 40--80 phones & Ground truth for ranking & to do \\
+Gold comparative set (ours) & 300--500 sentences, 2 annotators (Cohen's $\kappa$) & In-domain test set; measures $\varepsilon$ & to do \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\vspace{-4pt}
+{\small The crawler respects robots.txt (5\,s delay) and stores no reviewer names. Of ViSFD comments, 27\% contain a comparative cue
+and 7.7\% compare against a named phone, which is consistent with the $\sim$10\% share of comparative opinions reported in L06.}
+
+%==================================================================================================
+\section{Current experimental results}
+\subsection{Aspect-based sentiment analysis (UIT-ViSFD test set)}
+The baseline is TF-IDF (word 1--2-grams and character 2--5-grams) with one logistic-regression classifier per aspect. Our model is
+\textbf{PhoBERT-base-v2}~\cite{phobert} trained \textbf{multi-task}: a shared encoder ([CLS] + mean pooling) feeds one 4-way head per aspect
+(none / positive / negative / neutral). It uses a class-weighted loss and pyvi word segmentation, and the best of 6 epochs is chosen on dev.
+
+\begin{center}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{minipage}[t]{0.53\textwidth}\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Model & Aspect det.\ micro-F1 & Aspect\#pol.\ micro-F1 \\
+\midrule
+TF-IDF + LR & 0.829 & 0.710 \\
+\textbf{PhoBERT-base-v2 (multi-task)} & \textbf{0.890} & \textbf{0.815} \\
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.45\textwidth}\centering
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+PhoBERT & BATTERY & CAMERA & PERF. & SCREEN \\
+\midrule
+Detection F1 & 0.969 & 0.957 & 0.919 & 0.846 \\
+Aspect\#pol.\ F1 & 0.856 & 0.870 & 0.829 & 0.771 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{center}
+\vspace{-4pt}
+{\small Queued on Kaggle: PhoBERT-large and XLM-R base/large with 3 seeds each (mean $\pm$ sd), plus a word-segmentation ablation.}
+
+\subsection{Comparative opinion extraction}
+We implemented a \textbf{rule-based Vietnamese extractor} that follows L06 (comparative sentence mining). It outputs the relation
+$\langle C, F, e_1, e_2, \mathit{type}\rangle$, which we map to the VCOM quintuple (subject, object, aspect, predicate, label).
+The rules use cue patterns (\emph{X hơn Y, không bằng, thua, ngang, nhất}), predicate polarity that can reverse the direction
+(\emph{``nóng / hao pin hơn''} $\rightarrow$ COM$-$), and an implicit subject (THIS = the reviewed phone).
+On ViSFD, 3{,}051 comments contain a cue, but the rules produce a tuple for only \textbf{510} of them
+(EQL 44, COM+ 102, COM$-$ 181, SUP+ 140, SUP$-$ 63). Typical misses are multi-aspect comparisons
+(\emph{``hơn hẳn con ultra về cấu hình, màn hình, pin''}) and informal product mentions.
+To improve recall, an \textbf{LLM extractor} (Qwen2.5-7B-Instruct, few-shot, JSON output, VCOM label set) is queued on Kaggle to label all
+3{,}051 candidates. Its silver labels will train a PhoBERT extractor.
+
+\subsection{Ranking: failure modes of graph rankers, and the EDR model}
+\textbf{Model.} EDR operationalises expectation--disconfirmation theory~\cite{oliver1980}: satisfaction = performance $-$ expectation.
+A latent quality $\theta_{p,a}$ of product $p$ on aspect $a$ explains both kinds of evidence mined from reviews:
+\begin{align*}
+\text{comparisons:}\quad & P(\text{observe } w \succ l) = (1-\varepsilon)\,\sigma(\theta_{w,a}-\theta_{l,a}) + \varepsilon\,\sigma(\theta_{l,a}-\theta_{w,a}),\\
+\text{direct ABSA counts:}\quad & P(\text{review of } p \text{ on } a \text{ is positive}) = \sigma\big(\alpha_a\,\theta_{p,a} - \boldsymbol\beta_a^{\top}\mathbf{x}_p + b_a\big),
+\end{align*}
+where the first line is Bradley--Terry~\cite{bt1952} with extraction flip rate $\varepsilon$, and $\mathbf{x}_p$ holds expectation covariates (z-scored price, brand) with \emph{learned} $\boldsymbol\beta_a$,
+so the model reports how price- or brand-relative reviewers are on each aspect. A side $w$ or $l$ may also be a set of products
+(a brand-only mention such as \emph{``hơn samsung''}), represented by the set's mean $\theta$. A hierarchical prior $\theta_{p,a}\sim\mathcal N(\mu_p,\tau^2)$
+shares strength across aspects. The model is fitted by MAP (L-BFGS), and bootstrap resampling gives rank intervals.
+
+\textbf{Simulation 1: price-relative sentiment.} Real benchmark data is not ready yet, so we compare rankers in a controlled simulation.
+It has 30 products with hidden quality $q$ (playing the role of benchmark scores) and 400 comparisons with a Zipf-like popularity skew.
+Direct sentiment has log-odds $q-\lambda\cdot\text{price}$, where $\lambda$ controls how \emph{price-relative} the sentiment is
+(\emph{``ngon trong tầm giá''}). Table~\ref{tab:sim1} reports Spearman $\rho$ against $q$ over 30 seeds.
+
+\begin{table}[h]
+\centering\small
+\caption{Simulation 1: Spearman $\rho$ against hidden quality as sentiment becomes price-relative ($\lambda$).}\label{tab:sim1}
+\begin{tabular}{@{}lcccc@{\hspace{18pt}}lcccc@{}}
+\toprule
+Ranker & $\lambda{=}0$ & $0.5$ & $0.8$ & $1$ & Ranker & $\lambda{=}0$ & $0.5$ & $0.8$ & $1$ \\
+\midrule
+PageRank & .25 & .25 & .25 & .25 & Sentiment only & .79 & .43 & .12 & $-.02$ \\
+pRank~\cite{zhang2010} & .79 & .44 & .13 & $-.01$ & Price only & .53 & .53 & .53 & .53 \\
+pRank, graph part only & .31 & .31 & .31 & .31 & Bradley--Terry + sentiment & .76 & .64 & .49 & .42 \\
+Bradley--Terry & .65 & .65 & .65 & .65 & \textbf{EDR (ours)} & \textbf{.80} & \textbf{.80} & \textbf{.78} & \textbf{.77} \\
+\bottomrule
+\end{tabular}
+\end{table}
+\vspace{-6pt}
+Plain PageRank mostly measures how often a product is \emph{mentioned}. pRank behaves like sentiment-only ranking
+because its multiplicative node weight dominates the graph, so it collapses when sentiment is price-relative.
+Ablations of EDR: without the price term, $\rho$ falls to $0.03$ at $\lambda{=}1$; without comparisons, $\rho\le0.63$.
+The comparisons fix the quality scale, which is what makes ``good'' separable from ``good for the price''.
+
+\textbf{Simulation 2: realistic failure modes.} This setting has 40 phones in 6 brands, sentiment that is relative to both price and brand,
+40\% of comparisons naming only a brand, and extraction errors that flip the direction with rate $\varepsilon$ (20 seeds).
+``Held-out'' is the accuracy of predicting held-out comparison directions, a check that needs no benchmark.
+
+\begin{table}[h]
+\centering\small
+\caption{Simulation 2 (400 comparisons per aspect): Spearman $\rho$ and held-out comparison accuracy (acc.).}\label{tab:sim2}
+\footnotesize\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & \multicolumn{2}{c}{$\varepsilon=0$} & \multicolumn{2}{c}{$\varepsilon=0.15$} & \multicolumn{2}{c}{$\varepsilon=0.30$} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(l){6-7}
+Method & $\rho$ & acc. & $\rho$ & acc. & $\rho$ & acc. \\
+\midrule
+Bradley--Terry & .603 & .688 & .444 & .615 & .258 & .524 \\
+pRank~\cite{zhang2010} / BT + sentiment / price only & .48 / .64 / .65 & -- & .47 / .53 / .65 & -- & .47 / .44 / .65 & -- \\
+EDR, price expectation & .762 & .705 & .720 & .620 & \textbf{.651} & .555 \\
+\quad + brand expectation & \textbf{.795} & .731 & .717 & .640 & .602 & .574 \\
+\quad + brand comparisons + noise-aware ($\varepsilon$ measured) & .788 & \textbf{.736} & \textbf{.732} & \textbf{.653} & .648 & .568 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\vspace{-6pt}
+\textbf{Findings.}
+(i)~EDR beats every baseline until extraction errors become very large.
+(ii)~\textbf{Break-even:} comparative mining beats the simple price heuristic only while the direction error is $\varepsilon\lesssim0.30$.
+Bradley--Terry + sentiment loses to price already at $\varepsilon\approx0.05$, and pRank loses to price everywhere. This gives the extractor a concrete accuracy target.
+(iii)~$\varepsilon$ cannot be learned from the data alone, because it is confounded with the quality scale, so it must be measured on gold annotations.
+(iv)~Brand expectations help with plentiful, clean data but overfit when data is sparse or noisy. Brand-level comparisons gave no measurable gain (a negative result).
+\emph{Caveat:} the simulations show mechanisms and failure modes, not real-world accuracy, which will come from benchmark correlation.
+
+\subsection{Real-data finding: what drives Vietnamese buyers' ratings (UIT-ViSFD, $n=11{,}122$)}
+Regressing the 1--5 star rating on aspect polarity indicators gives $R^2=0.615$ (bootstrap 95\% CIs). Negative mentions cost
+\textbf{1.5--2.7$\times$ more stars than positive mentions add} for almost every aspect: PERFORMANCE $+0.40/-0.61$, SER\&ACC $+0.44/-0.74$,
+CAMERA $+0.18/-0.34$, FEATURES $+0.19/-0.50$. This is the loss aversion predicted by prospect theory~\cite{kt1979}, which independently
+supports EDR's reference-dependent view of sentiment. DESIGN is the exception ($+0.31/-0.17$). We will use these coefficients to weight aspects when combining them into an overall ranking.
+
+%==================================================================================================
+\section{Next steps (towards the final report and presentation)}
+\begin{itemize}
+\item \textbf{Data (W1--W2).} Finish the crawl and add a second source if reviews per phone are too sparse. Build the benchmark sheet.
+Obtain VCOM. Annotate the gold comparative set.
+\item \textbf{Extraction (W2--W3).} Compare LLM silver labels with rules. Distil the LLM labels into a PhoBERT extractor. Report exact- and partial-match quintuple F1
+on VCOM and the gold set. Link product mentions to the catalogue. \textbf{Measure $\varepsilon$} to place each extractor on the break-even curve.
+\item \textbf{Ranking on real data (W3).} Compare all rankers per aspect against the benchmarks: Spearman, Kendall $\tau$, NDCG@10 and bootstrap CIs,
+overall and within price tiers, plus held-out comparison accuracy. Report the learned $\boldsymbol\beta_a$, i.e.\ how price- and brand-relative Vietnamese reviewers are on each aspect.
+\item \textbf{Deliverables (W4).} Final report, slides, and a demo that shows, for a chosen aspect, the ranked phones, their rank intervals and the review evidence behind each comparison.
+\end{itemize}
+{\small Compute: Kaggle T4 GPUs for transformer and LLM jobs; laptop CPU for crawling and ranking. All code, configurations and result files are in the repository.}
+
+%==================================================================================================
+{\footnotesize
+\begin{thebibliography}{9}\setlength{\itemsep}{0pt}
+\bibitem{zhang2010} K.~Zhang, R.~Narayanan, A.~Choudhary. Voice of the customers: Mining online customer reviews for product feature-based ranking. \emph{WOSN}, 2010.
+\bibitem{visfd} L.~L.~Phan et al. SA2SL: From aspect-based sentiment analysis to social listening system for business intelligence. \emph{KSEM}, 2021 (UIT-ViSFD).
+\bibitem{vcom} H.-Q.~Le, D.-C.~Can, K.-H.~Nguyen, M.-V.~Tran. Overview of the VLSP 2023 -- ComOM shared task: A data challenge for comparative opinion mining from Vietnamese product reviews. arXiv:2402.13613, 2024.
+\bibitem{phobert} D.~Q.~Nguyen, A.~T.~Nguyen. PhoBERT: Pre-trained language models for Vietnamese. \emph{Findings of EMNLP}, 2020.
+\bibitem{bt1952} R.~A.~Bradley, M.~E.~Terry. Rank analysis of incomplete block designs I: The method of paired comparisons. \emph{Biometrika}, 39, 1952.
+\bibitem{oliver1980} R.~L.~Oliver. A cognitive model of the antecedents and consequences of satisfaction decisions. \emph{J.\ Marketing Research}, 17(4), 1980.
+\bibitem{kt1979} D.~Kahneman, A.~Tversky. Prospect theory: An analysis of decision under risk. \emph{Econometrica}, 47(2), 1979.
+\end{thebibliography}}
+
+\end{document}

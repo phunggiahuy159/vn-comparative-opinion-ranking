@@ -1,0 +1,109 @@
+{
+  "aspect_detection_microF1": 0.8900988102440008,
+  "aspect_detection_macroF1": 0.8662198424836731,
+  "aspect_polarity_microF1": 0.8149492505209384,
+  "per_aspect": {
+    "BATTERY": {
+      "det_F1": 0.9689922480620154,
+      "pair_microF1": 0.8556201550387597
+    },
+    "CAMERA": {
+      "det_F1": 0.9568106312292359,
+      "pair_microF1": 0.8704318936877077
+    },
+    "DESIGN": {
+      "det_F1": 0.8957816377171216,
+      "pair_microF1": 0.8387096774193549
+    },
+    "FEATURES": {
+      "det_F1": 0.8884325804243669,
+      "pair_microF1": 0.8008213552361396
+    },
+    "GENERAL": {
+      "det_F1": 0.9050942079553385,
+      "pair_microF1": 0.8646196789951152
+    },
+    "PERFORMANCE": {
+      "det_F1": 0.9190110826939472,
+      "pair_microF1": 0.8286445012787724
+    },
+    "PRICE": {
+      "det_F1": 0.9288702928870293,
+      "pair_microF1": 0.7949790794979079
+    },
+    "SCREEN": {
+      "det_F1": 0.8464163822525598,
+      "pair_microF1": 0.7713310580204779
+    },
+    "SER&ACC": {
+      "det_F1": 0.856682769726248,
+      "pair_microF1": 0.8067632850241546
+    },
+    "STORAGE": {
+      "det_F1": 0.7878787878787878,
+      "pair_microF1": 0.6060606060606061
+    },
+    "OTHERS": {
+      "det_F1": 0.574447646493756,
+      "pair_microF1": 0.574447646493756
+    }
+  },
+  "model": "vinai/phobert-base-v2",
+  "segment": true,
+  "device": "mps",
+  "args": {
+    "model": "vinai/phobert-base-v2",
+    "segment": 1,
+    "epochs": 6,
+    "bs": 32,
+    "lr": 3e-05,
+    "head_lr": 0.001,
+    "max_len": 160,
+    "seed": 42,
+    "tag": null
+  },
+  "log": [
+    {
+      "epoch": 1,
+      "train_loss": 0.7369502293037586,
+      "dev_det": 0.8484184581678762,
+      "dev_pair": 0.7350403943584828,
+      "sec": 311
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.4274469035082176,
+      "dev_det": 0.877396705374021,
+      "dev_pair": 0.7882797731568998,
+      "sec": 319
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.3251393848999602,
+      "dev_det": 0.8846787479406919,
+      "dev_pair": 0.8036792970895112,
+      "sec": 322
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.2602324645172377,
+      "dev_det": 0.8834473324213407,
+      "dev_pair": 0.7980848153214775,
+      "sec": 329
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.21463771732371362,
+      "dev_det": 0.8876159301691217,
+      "dev_pair": 0.8046917621385706,
+      "sec": 345
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.18343622252711508,
+      "dev_det": 0.8873701476216512,
+      "dev_pair": 0.8031711317659923,
+      "sec": 341
+    }
+  ]
+}

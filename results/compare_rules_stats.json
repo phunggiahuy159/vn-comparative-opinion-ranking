@@ -1,0 +1,12 @@
+{
+  "comments": 11122,
+  "with_cue": 3051,
+  "with_rule_tuple": 510,
+  "label_counts": {
+    "EQL": 44,
+    "COM-": 181,
+    "SUP+": 140,
+    "COM+": 102,
+    "SUP-": 63
+  }
+}

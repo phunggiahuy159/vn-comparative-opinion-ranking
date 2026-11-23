@@ -1,0 +1,7 @@
+datasets
+pandas
+scikit-learn
+scipy
+numpy
+# next stages
+# torch transformers pyvi networkx requests

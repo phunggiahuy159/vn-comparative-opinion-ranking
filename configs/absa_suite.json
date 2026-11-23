@@ -1,0 +1,47 @@
+[
+  {
+    "script": "src/absa_transformer.py",
+    "tag": "phobert-large_s42",
+    "args": "--model vinai/phobert-large --segment 1 --bs 16 --lr 2e-5 --epochs 6 --seed 42 --keep_ckpt 1"
+  },
+  {
+    "script": "src/absa_transformer.py",
+    "tag": "phobert-large_s43",
+    "args": "--model vinai/phobert-large --segment 1 --bs 16 --lr 2e-5 --epochs 6 --seed 43 --keep_ckpt 0"
+  },
+  {
+    "script": "src/absa_transformer.py",
+    "tag": "phobert-large_s44",
+    "args": "--model vinai/phobert-large --segment 1 --bs 16 --lr 2e-5 --epochs 6 --seed 44 --keep_ckpt 0"
+  },
+  {
+    "script": "src/absa_transformer.py",
+    "tag": "xlmr-large_s42",
+    "args": "--model FacebookAI/xlm-roberta-large --segment 0 --bs 16 --lr 1e-5 --epochs 6 --seed 42 --keep_ckpt 0"
+  },
+  {
+    "script": "src/absa_transformer.py",
+    "tag": "phobert-base-v2_s42",
+    "args": "--model vinai/phobert-base-v2 --segment 1 --epochs 6 --seed 42 --keep_ckpt 1"
+  },
+  {
+    "script": "src/absa_transformer.py",
+    "tag": "phobert-base-v2_s43",
+    "args": "--model vinai/phobert-base-v2 --segment 1 --epochs 6 --seed 43 --keep_ckpt 0"
+  },
+  {
+    "script": "src/absa_transformer.py",
+    "tag": "phobert-base-v2_s44",
+    "args": "--model vinai/phobert-base-v2 --segment 1 --epochs 6 --seed 44 --keep_ckpt 0"
+  },
+  {
+    "script": "src/absa_transformer.py",
+    "tag": "phobert-base-v2-noseg_s42",
+    "args": "--model vinai/phobert-base-v2 --segment 0 --epochs 6 --seed 42 --keep_ckpt 0"
+  },
+  {
+    "script": "src/absa_transformer.py",
+    "tag": "xlmr-base_s42",
+    "args": "--model FacebookAI/xlm-roberta-base --segment 0 --epochs 6 --seed 42 --keep_ckpt 0"
+  }
+]

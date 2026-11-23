@@ -1,0 +1,26 @@
+# environments / caches
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# large model artefacts (re-create with src/absa_transformer.py)
+results/**/best.pt
+results/**/*.npy
+
+# crawled third-party text and raw data (re-create with src/crawl_*.py) — not redistributed
+data/*.jsonl
+data/real_graph.json
+data/tgdd_crawl_state.json
+
+# instructor's lecture slides (copyrighted course material)
+course-resources/slides/
+course-resources/text/
+
+# generated Kaggle bundles / downloads, logs, LaTeX intermediates
+kaggle/build/
+kaggle/out/
+logs/
+report/*.aux
+report/*.log
+report/*.out
