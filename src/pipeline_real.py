@@ -34,7 +34,22 @@ def load_reviews():
     seen, out = set(), []
     for r in rs:
         if r["commentId"] not in seen and (r.get("content") or "").strip():
-            seen.add(r["commentId"]); out.append(r)
+            seen.add(r["commentId"]); out.append({**r, "source": "tgdd"})
+    # second source: CellphoneS reviews, already mapped to the thegioididong modelId (data/cps_targets.json);
+    # they inherit that model's thegioididong slug so prices and spec sheets line up.
+    cps = ROOT / "data" / "cps_reviews.jsonl"
+    if cps.exists():
+        slug_of = {}
+        for r in out:
+            slug_of.setdefault(str(r["modelId"]), r["slug"])
+        for l in open(cps):
+            c = json.loads(l)
+            cid = f"cps-{c['id']}"
+            if cid in seen or not (c.get("content") or "").strip() or str(c["modelId"]) not in slug_of:
+                continue
+            seen.add(cid)
+            out.append({"commentId": cid, "content": c["content"], "score": c.get("rating"), "modelId": c["modelId"],
+                        "slug": slug_of[str(c["modelId"])], "createdDate": c.get("created_at"), "source": "cellphones"})
     return out
 
 
@@ -153,7 +168,8 @@ def main():
 
     kinds = collections.Counter(("cat" if c["winner"] in products else c["winner"].split(":")[0]) + "-" +
                                 ("cat" if c["loser"] in products else c["loser"].split(":")[0]) for c in comps)
-    stats = {"reviews": len(reviews), "products": len(products),
+    stats = {"reviews": len(reviews), "reviews_by_source": dict(collections.Counter(r["source"] for r in reviews)),
+             "products": len(products),
              "products_with_price": sum(p["price"] is not None for p in products.values()),
              "products_>=20_reviews": sum(p["n_reviews"] >= 20 for p in products.values()),
              "rule_tuples_with_object": raw, "linked_comparisons": len(comps), "edge_kinds": dict(kinds),

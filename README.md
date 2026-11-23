@@ -22,7 +22,7 @@ sentiment. It corrects the popularity and price-relative-sentiment biases of Pag
 | `src/absa_baseline.py`, `src/absa_transformer.py`, `src/absa_infer.py` | ABSA: TF-IDF baseline, PhoBERT multi-task training, CPU inference |
 | `src/compare_rules.py`, `src/llm_extract.py` | comparative quintuple extraction: rules (L06) and Qwen2.5-7B few-shot (Kaggle) |
 | `src/entity_link.py` | product-mention linking (catalogue / brand group / external phone) |
-| `src/crawl_tgdd.py`, `src/crawl_prices.py`, `src/crawl_vnexpress.py` | polite crawlers (robots.txt, 5 s delay, no reviewer names); prices + spec sheets |
+| `src/crawl_tgdd.py`, `src/crawl_cellphones.py`, `src/crawl_prices.py`, `src/crawl_vnexpress.py` | polite crawlers (robots.txt, 5 s delay, no reviewer names); prices + spec sheets |
 | `src/pipeline_real.py`, `src/real_rank.py` | real data: reviews → ABSA + comparisons → graph → all rankers + EDR, benchmark evaluation |
 | `src/aspect_importance.py` | real-data finding: star ratings vs aspect polarity (loss aversion) |
 | `src/run_suite.py`, `configs/`, `kaggle/push.sh` | run GPU experiment suites on Kaggle via the CLI |

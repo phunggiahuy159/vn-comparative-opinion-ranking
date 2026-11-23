@@ -24,3 +24,4 @@ logs/
 report/*.aux
 report/*.log
 report/*.out
+data/cps_crawl_state.json

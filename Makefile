@@ -22,6 +22,7 @@ data:                     ## polite crawls (robots.txt, 5 s delay) — slow; res
 	$(PY) -u src/crawl_tgdd.py
 	$(PY) -u src/crawl_prices.py data/tgdd_phone_urls.txt
 	$(PY) -u src/crawl_vnexpress.py
+	$(PY) src/crawl_cellphones.py --targets && $(PY) -u src/crawl_cellphones.py
 
 real:                     ## real pipeline (needs data/ + PhoBERT checkpoint) → graph → EDR rankings
 	$(PY) src/pipeline_real.py
