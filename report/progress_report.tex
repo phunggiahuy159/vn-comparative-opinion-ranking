@@ -27,13 +27,13 @@
 \raggedbottom
 
 \title{Vietnamese Aspect-Based Opinion Mining\\and Comparative Product Ranking}
-\author{Phùng Gia Huy (20235506), Vũ Hải An (20235468),\\ \textbf{Chu Xuân Minh (20235527), Nguyễn Bình Anh (20235470)}\\
-\textnormal{Group 20 \quad IT4868E Web Mining, Hanoi University of Science and Technology}\\
-\textnormal{Progress report, 23/11/2026}\\ \textnormal{\url{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}}}
+\author{Phùng Gia Huy, Vũ Hải An, Chu Xuân Minh \& Nguyễn Bình Anh \\
+Hanoi University of Science and Technology \\
+\texttt{\href{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}{github.com/phunggiahuy159/vn-comparative-opinion-ranking}}}
 
 \begin{document}
 \maketitle
-\lhead{IT4868E Web Mining --- Capstone Progress Report --- Group 20}
+\lhead{IT4868E Web Mining --- Group 20 --- Progress Report, 23/11/2026}
 \vspace{-14pt}
 
 %==================================================================================================
@@ -43,7 +43,6 @@ As stated in our proposal, we mine Vietnamese smartphone reviews to
 (ii)~extract \textbf{comparative opinions} between products (\emph{``pin trâu hơn con A50''}), and
 (iii)~model the comparisons as a per-aspect \textbf{product graph} that ranks phones by battery, camera, performance and screen.
 The rankings are \textbf{validated against objective benchmarks} (battery tests, DXOMARK, AnTuTu).
-The project combines lectures L05 (link analysis), L06 (opinion mining), L07 (information extraction) and L02/L04 (learning, evaluation).
 
 \begin{center}
 \begin{tikzpicture}[node distance=0.22cm, every node/.style={font=\scriptsize},
@@ -109,7 +108,7 @@ PhoBERT-base-v2, multi-task & \textbf{0.890} & \textbf{0.815} & 0.856 & 0.870 & 
 Per-aspect columns give aspect\#polarity F1. Queued on Kaggle: PhoBERT-large and XLM-R (3 seeds each) and a segmentation ablation.
 
 \subsection{Comparative extraction and entity linking}
-A \textbf{rule-based extractor} (L06) outputs $\langle$subject, object, aspect, predicate, label$\rangle$ in the VCOM label set, using cue patterns
+A \textbf{rule-based extractor} outputs $\langle$subject, object, aspect, predicate, label$\rangle$ in the VCOM label set, using cue patterns
 (\emph{hơn, không bằng, thua, ngang, nhất}), direction-reversing predicates (\emph{``hao pin hơn''} $\Rightarrow$ COM$-$) and an implicit subject.
 On ViSFD it yields tuples for only \textbf{510} of 3{,}051 cue-bearing comments, missing multi-aspect comparisons and informal names.
 An \textbf{LLM extractor} (Qwen2.5-7B-Instruct, few-shot, JSON) is queued on Kaggle; its silver labels will train a PhoBERT extractor.

@@ -30,13 +30,13 @@
 \newcommand{\todo}[1]{\textbf{[TODO: #1]}}
 
 \title{Expectation--Disconfirmation Ranking:\\Mining Vietnamese Reviews to Rank\\Smartphones by Aspect}
-\author{Phùng Gia Huy (20235506), Vũ Hải An (20235468),\\ \textbf{Chu Xuân Minh (20235527), Nguyễn Bình Anh (20235470)}\\
-\textnormal{Group 20 \quad IT4868E Web Mining, Hanoi University of Science and Technology}\\
-\textnormal{Final report (draft)}\\ \textnormal{\url{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}}}
+\author{Phùng Gia Huy, Vũ Hải An, Chu Xuân Minh \& Nguyễn Bình Anh \\
+Hanoi University of Science and Technology \\
+\texttt{\href{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}{github.com/phunggiahuy159/vn-comparative-opinion-ranking}}}
 
 \begin{document}
 \maketitle
-\lhead{IT4868E Web Mining --- Capstone Final Report --- Group 20}
+\lhead{IT4868E Web Mining --- Group 20 --- Final Report}
 
 \begin{abstract}
 We study how to turn Vietnamese smartphone reviews into per-aspect product rankings (battery, camera, performance, screen)
@@ -109,7 +109,7 @@ plus listed prices and spec sheets. robots.txt was respected (5\,s delay), and n
 \end{center}
 \paragraph{ABSA.} PhoBERT-base-v2 with a shared encoder ([CLS] + mean pooling) and one 4-way head per aspect (none / positive / negative / neutral),
 trained with a class-weighted loss. Word segmentation uses pyvi.
-\paragraph{Comparative extraction.} The rule-based extractor follows the lecture's comparative-sentence patterns adapted to Vietnamese
+\paragraph{Comparative extraction.} The rule-based extractor uses comparative-sentence patterns \citep{jindal2006} adapted to Vietnamese
 (\emph{hơn, không bằng, thua, ngang, nhất}), with predicate polarity that can reverse the direction (\emph{``nóng hơn''} $\Rightarrow$ worse).
 An LLM extractor (Qwen2.5-7B-Instruct, few-shot, JSON output, VCOM labels) produces silver labels for higher recall.
 \paragraph{Entity linking.} Each mention is mapped to a catalogue product, a brand set (\emph{``ss''}, \emph{``hơn samsung''}), or an external phone outside the catalogue.
