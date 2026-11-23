@@ -81,9 +81,11 @@ Dataset & Size & Use & Status \\
 \midrule
 UIT-ViSFD \citep{visfd} & 11{,}122 comments, 10 aspects, 3 polarities & ABSA & done \\
 VCOM \citep{vcom} & 9{,}225 sentences, 2{,}468 quintuples, 8 labels & Comparatives & requested \\
-Buyer reviews (TGDD) & 1{,}414 reviews of 102 phones, with prices & Ranking & running \\
-Expert articles (VnExpress) & 369 reviews and comparisons & Head-to-head & running \\
-Spec sheets, benchmarks & 279 phones: mAh, nits, chip; lab tests & Ground truth & running \\
+Buyer reviews (TGDD) & 1{,}414 reviews of 102 phones, with prices & Ranking & done \\
+Buyer reviews (CellphoneS) & 480 reviews of 59 of the same phones & Ranking & done \\
+Expert articles (VnExpress) & 708 reviews and comparisons & Head-to-head & done \\
+Spec sheets & 279 phones: battery mAh, peak nits, chip & Ground truth & done \\
+Lab benchmarks & AnTuTu, DXOMARK, battery tests for a subset & Ground truth & planned \\
 Gold comparatives (ours) & 300--500 sentences, 2 annotators & Measure $\varepsilon$ & planned \\
 \bottomrule
 \end{tabularx}
@@ -94,6 +96,7 @@ compare against a named phone.
 
 %==================================================================================================
 \section{Current results}
+All code, configurations and result files are in the repository: \url{https://github.com/phunggiahuy159/vn-comparative-opinion-ranking}.
 \subsection{Aspect-based sentiment analysis}
 Our model is \textbf{PhoBERT-base-v2} \citep{phobert} trained \textbf{multi-task}: a shared encoder ([CLS] + mean pooling) feeds one 4-way head
 per aspect (none/pos/neg/neu), with a class-weighted loss and pyvi segmentation. The baseline is TF-IDF + logistic regression per aspect.
@@ -174,18 +177,20 @@ BT + sentiment falls below price at $\varepsilon\approx0.1$. This gives an accur
 1.5--2.7$\times$ more stars than positive ones add (e.g.\ PERFORMANCE $+0.40/-0.61$), as prospect theory predicts \citep{kt1979}; DESIGN is the exception.
 (iv)~\textbf{Reference points} (real data): of 23 linked comparisons in buyer reviews, 13 target the reviewer's older phone, 9 a brand and only 1
 another current phone, so head-to-head evidence must come from expert articles.
+(v)~\textbf{First real-data check} (1{,}894 reviews, phones with ${\ge}10$ reviews, Spearman against spec sheets): ranking by price is
+negatively correlated with battery capacity ($-0.10$) and camera resolution ($-0.30$), as the simulation predicts; review sentiment tracks
+screen brightness ($0.66$). With about 20--35 phones per aspect and no head-to-head comparisons yet, the rankers are not separable.
 
 %==================================================================================================
 \section{Next steps}
 \begin{itemize}
-\item \textbf{Data.} Finish the review, spec-sheet and article crawls; obtain VCOM; collect lab benchmarks for a subset; annotate the gold comparative set.
+\item \textbf{Data.} Obtain VCOM; collect lab benchmarks for a subset; annotate the gold comparative set.
 \item \textbf{Extraction.} Compare LLM silver labels with the rules; distil them into a PhoBERT extractor; report quintuple F1 on VCOM and gold
 and \textbf{measure $\varepsilon$} to place each extractor on the break-even curve.
 \item \textbf{Ranking on real data.} Evaluate all rankers per aspect against spec proxies and benchmarks (Spearman, Kendall $\tau$, NDCG@10,
 bootstrap CIs, also within price tiers) and report the learned $\gamma_a$.
 \item \textbf{Deliverables.} Final report, slides, and a demo: pick an aspect, see ranked phones, rank intervals and the evidence for each comparison.
 \end{itemize}
-Compute: Kaggle T4 GPUs for transformer and LLM jobs, laptop CPU for crawling and ranking; everything reproduces with \texttt{make all}.
 
 %==================================================================================================
 {\small
